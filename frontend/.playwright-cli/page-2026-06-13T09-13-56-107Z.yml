@@ -1,0 +1,834 @@
+- generic [ref=e3]:
+  - complementary "AI Learning OS navigation" [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e7]
+      - generic [ref=e10]:
+        - paragraph [ref=e11]: AI Learning OS
+        - heading "个性化学习智能体平台" [level=1] [ref=e12]
+    - paragraph [ref=e13]: 主动学习闭环
+    - button "新建学习任务" [ref=e14] [cursor=pointer]:
+      - img [ref=e15]
+      - generic [ref=e16]: 新建学习任务
+    - navigation "功能区块" [ref=e17]:
+      - heading "功能区块" [level=2] [ref=e18]
+      - generic [ref=e19]:
+        - link "学习工作台 AI 学习闭环" [ref=e20] [cursor=pointer]:
+          - /url: /
+          - img [ref=e21]
+          - generic [ref=e24]:
+            - strong [ref=e25]: 学习工作台
+            - generic [ref=e26]: AI 学习闭环
+        - link "教师审核 资源发布闸口" [ref=e27] [cursor=pointer]:
+          - /url: /teacher/reviews
+          - img [ref=e28]
+          - generic [ref=e31]:
+            - strong [ref=e32]: 教师审核
+            - generic [ref=e33]: 资源发布闸口
+        - link "运维面板 健康与指标" [ref=e34] [cursor=pointer]:
+          - /url: /admin/operations
+          - img [ref=e35]
+          - generic [ref=e37]:
+            - strong [ref=e38]: 运维面板
+            - generic [ref=e39]: 健康与指标
+        - link "模型供应商 模型路由配置" [ref=e40] [cursor=pointer]:
+          - /url: /admin/model-providers
+          - img [ref=e41]
+          - generic [ref=e42]:
+            - strong [ref=e43]: 模型供应商
+            - generic [ref=e44]: 模型路由配置
+        - button "知识库 待接入路由" [disabled] [ref=e45]:
+          - img [ref=e46]
+          - generic [ref=e49]:
+            - strong [ref=e50]: 知识库
+            - generic [ref=e51]: 待接入路由
+        - button "设置 待接入路由" [disabled] [ref=e52]:
+          - img [ref=e53]
+          - generic [ref=e56]:
+            - strong [ref=e57]: 设置
+            - generic [ref=e58]: 待接入路由
+    - region "历史记录" [ref=e59]:
+      - generic [ref=e60]:
+        - heading "历史记录" [level=2] [ref=e61]
+        - img [ref=e62]
+      - generic [ref=e65]:
+        - img [ref=e66]
+        - searchbox [ref=e69]
+      - generic [ref=e70]:
+        - generic [ref=e71]:
+          - heading "今天" [level=3] [ref=e72]
+          - button "微积分极限入门学习 学习任务 · 09:40 active" [ref=e73] [cursor=pointer]:
+            - generic [ref=e74]:
+              - strong [ref=e75]: 微积分极限入门学习
+              - generic [ref=e76]: 学习任务 · 09:40
+            - emphasis [ref=e77]: active
+          - button "RAG 课程资料问答 RAG 问答 · 11:12 done" [ref=e78] [cursor=pointer]:
+            - generic [ref=e79]:
+              - strong [ref=e80]: RAG 课程资料问答
+              - generic [ref=e81]: RAG 问答 · 11:12
+            - emphasis [ref=e82]: done
+          - button "函数连续性错题讲解 错题讲解 · 14:28 draft" [ref=e83] [cursor=pointer]:
+            - generic [ref=e84]:
+              - strong [ref=e85]: 函数连续性错题讲解
+              - generic [ref=e86]: 错题讲解 · 14:28
+            - emphasis [ref=e87]: draft
+        - generic [ref=e88]:
+          - heading "最近 7 天" [level=3] [ref=e89]
+          - button "线性代数第 2 章复习 复习计划 · 周四 done" [ref=e90] [cursor=pointer]:
+            - generic [ref=e91]:
+              - strong [ref=e92]: 线性代数第 2 章复习
+              - generic [ref=e93]: 复习计划 · 周四
+            - emphasis [ref=e94]: done
+          - button "概率论练习题生成 资源生成 · 周三 active" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]:
+              - strong [ref=e97]: 概率论练习题生成
+              - generic [ref=e98]: 资源生成 · 周三
+            - emphasis [ref=e99]: active
+          - button "导数概念资源生成 资源生成 · 周一 done" [ref=e100] [cursor=pointer]:
+            - generic [ref=e101]:
+              - strong [ref=e102]: 导数概念资源生成
+              - generic [ref=e103]: 资源生成 · 周一
+            - emphasis [ref=e104]: done
+        - generic [ref=e105]:
+          - heading "更早" [level=3] [ref=e106]
+          - button "高等数学复习计划 学习路径 · 5月 done" [ref=e107] [cursor=pointer]:
+            - generic [ref=e108]:
+              - strong [ref=e109]: 高等数学复习计划
+              - generic [ref=e110]: 学习路径 · 5月
+            - emphasis [ref=e111]: done
+          - button "英语阅读学习路径 学习路径 · 4月 draft" [ref=e112] [cursor=pointer]:
+            - generic [ref=e113]:
+              - strong [ref=e114]: 英语阅读学习路径
+              - generic [ref=e115]: 学习路径 · 4月
+            - emphasis [ref=e116]: draft
+    - generic [ref=e117]:
+      - img [ref=e119]
+      - generic [ref=e122]:
+        - strong [ref=e123]: 当前用户
+        - generic [ref=e124]: 个人账户
+      - img [ref=e125]
+  - main "AI learning workbench" [ref=e137]:
+    - region "Learning workbench" [ref=e138]:
+      - generic [ref=e139]:
+        - generic [ref=e140]:
+          - generic [ref=e141]:
+            - paragraph [ref=e142]: AI Learning Workspace
+            - heading "微积分分极限入门学习" [level=2] [ref=e143]
+            - generic "Course context" [ref=e144]:
+              - generic [ref=e145]: 课程：高等数学
+              - generic [ref=e146]: 知识点：极限概念
+              - generic [ref=e147]: 学习进度：进行中
+          - generic [ref=e148]:
+            - generic [ref=e149]:
+              - generic [ref=e150]: 学习模式
+              - combobox "学习模式" [ref=e151]:
+                - option "AI Tutor" [selected]
+                - option "刷题练习"
+                - option "路径复盘"
+            - button "分享" [ref=e152] [cursor=pointer]:
+              - img [ref=e153]
+              - generic [ref=e159]: 分享
+            - button "更多" [ref=e160] [cursor=pointer]:
+              - img [ref=e161]
+          - region "Learning session stats" [ref=e165]:
+            - article [ref=e166]:
+              - generic [ref=e167]: RAG 阶段
+              - strong [ref=e168]: IDLE
+            - article [ref=e169]:
+              - generic [ref=e170]: 平均掌握度
+              - strong [ref=e171]: 44%
+            - article [ref=e172]:
+              - generic [ref=e173]: 课程资料
+              - strong [ref=e174]: 1 / 0
+          - navigation "Workflow status" [ref=e175]:
+            - generic [ref=e176]:
+              - img [ref=e177]
+              - text: 画像
+            - generic [ref=e180]:
+              - img [ref=e181]
+              - text: 知识库
+            - generic [ref=e184]:
+              - img [ref=e185]
+              - text: 课程资料 Documents
+            - generic [ref=e188]: RAG 问答
+            - generic [ref=e190]: 引用来源
+            - generic [ref=e192]:
+              - img [ref=e193]
+              - text: 学习路径
+            - generic [ref=e196]: 生成资源
+            - generic [ref=e198]: 测评反馈
+        - region "AI tutor conversation stream" [ref=e200]:
+          - article [ref=e201]:
+            - generic [ref=e202]: 我
+            - generic [ref=e203]:
+              - paragraph [ref=e204]: User
+              - heading "Why does SQL JOIN duplicate rows?" [level=3] [ref=e205]
+              - paragraph [ref=e206]: I want to master Java backend project delivery. SQL JOIN diagnosis and cited RAG service are my weak points; I prefer code examples and project practice.
+          - article [ref=e207]:
+            - img [ref=e209]
+            - generic [ref=e212]:
+              - generic [ref=e213]:
+                - generic [ref=e214]:
+                  - paragraph [ref=e215]: AI Tutor
+                  - heading "极限概念学习助手" [level=3] [ref=e216]
+                - generic [ref=e217]: IDLE
+              - paragraph [ref=e218]: Ask against kb_java_backend to retrieve grounded course guidance.
+              - generic "RAG citation sources" [ref=e219]:
+                - generic [ref=e220]:
+                  - img [ref=e221]
+                  - text: database-course.md
+                  - generic [ref=e223]: p.12
+                  - generic [ref=e224]: score 0.87
+              - paragraph [ref=e225]: "traceId: trc_idle"
+          - article [ref=e226]:
+            - generic [ref=e227]:
+              - generic [ref=e228]:
+                - paragraph [ref=e229]: Learning Path
+                - heading "学习路径卡片" [level=3] [ref=e230]
+              - img [ref=e231]
+            - generic "Learning path" [ref=e235]:
+              - generic [ref=e236]:
+                - generic [ref=e237]:
+                  - strong [ref=e238]: HTTP Controllers
+                  - generic [ref=e239]: READY
+                - paragraph [ref=e240]: Controller basics are stable enough for API workflow practice.
+                - generic [ref=e242]: mastery 76%
+              - generic [ref=e245]:
+                - generic [ref=e246]:
+                  - strong [ref=e247]: SQL JOIN Diagnosis
+                  - generic [ref=e248]: CURRENT
+                - paragraph [ref=e249]: Weak point detected from profile extraction and prior answers.
+                - generic [ref=e251]: mastery 42%
+              - generic [ref=e254]:
+                - generic [ref=e255]:
+                  - strong [ref=e256]: Cited RAG Service
+                  - generic [ref=e257]:
+                    - img [ref=e258]
+                    - text: LOCKED
+                - paragraph [ref=e262]: Unlock after retrieval, citation grounding, and JOIN correction.
+                - generic [ref=e264]: mastery 18%
+          - article [ref=e267]:
+            - generic [ref=e268]:
+              - generic [ref=e269]:
+                - paragraph [ref=e270]: Generated Resources
+                - heading "生成资源卡片" [level=3] [ref=e271]
+              - img [ref=e272]
+            - generic [ref=e275]:
+              - generic [ref=e276]:
+                - term [ref=e277]: 任务
+                - definition [ref=e278]: DRAFT
+              - generic [ref=e279]:
+                - term [ref=e280]: 审核
+                - definition [ref=e281]: PENDING_CRITIC
+              - generic [ref=e282]:
+                - term [ref=e283]: 进度
+                - definition [ref=e284]: 0%
+              - generic [ref=e285]:
+                - term [ref=e286]: 安全
+                - definition [ref=e287]: PENDING
+            - generic [ref=e288]:
+              - generic [ref=e289]:
+                - img [ref=e291]
+                - generic [ref=e294]:
+                  - text: 微课视频
+                  - heading "JOIN duplication walkthrough" [level=4] [ref=e295]
+                  - paragraph [ref=e296]: database-course.md p.12
+                  - generic [ref=e297]:
+                    - generic [ref=e298]: 8 min
+                    - generic [ref=e299]: PENDING_CRITIC
+                    - generic [ref=e300]: PENDING
+              - generic [ref=e301]:
+                - img [ref=e303]
+                - generic [ref=e306]:
+                  - text: 练习题
+                  - heading "Fix a one-to-many query" [level=4] [ref=e307]
+                  - paragraph [ref=e308]: database-course.md p.14
+                  - generic [ref=e309]:
+                    - generic [ref=e310]: 6 questions
+                    - generic [ref=e311]: PENDING_CRITIC
+                    - generic [ref=e312]: PENDING
+          - article [ref=e313]:
+            - generic [ref=e314]:
+              - generic [ref=e315]:
+                - paragraph [ref=e316]: Assessment Feedback
+                - heading "测评反馈卡片" [level=3] [ref=e317]
+              - img [ref=e318]
+            - region "Assessment stats" [ref=e322]:
+              - article [ref=e323]:
+                - generic [ref=e324]: 分数
+                - strong [ref=e325]: "42"
+              - article [ref=e326]:
+                - generic [ref=e327]: mastery 变化
+                - strong [ref=e328]: +0%
+              - article [ref=e329]:
+                - generic [ref=e330]: 正确率
+                - strong [ref=e331]: 42%
+              - article [ref=e332]:
+                - generic [ref=e333]: 重规划
+                - strong [ref=e334]: Not created
+            - paragraph [ref=e335]: Waiting for answer
+            - generic [ref=e336]:
+              - generic [ref=e337]: 测评作答内容
+              - textbox "测评作答内容" [ref=e338]:
+                - /placeholder: 提交测评前，可以在这里写下你的推理过程。
+                - text: A JOIN duplicates parent rows when multiple child rows match; aggregate or constrain child rows before projecting.
+            - paragraph [ref=e339]: 学习建议：先用一个左右趋近的例子描述“无限接近但不一定取到”，再进入 ε-δ 形式化定义。
+        - form "AI tutor composer":
+          - generic [ref=e340]:
+            - textbox "问 AI Tutor：极限为什么可以描述“无限接近”？" [ref=e341]: Why does SQL JOIN duplicate rows?
+            - generic [ref=e342]:
+              - generic [ref=e343]:
+                - generic [ref=e344] [cursor=pointer]:
+                  - img [ref=e345]
+                  - generic [ref=e349]: 上传资料
+                  - button "上传资料" [ref=e350]
+                - button "入库" [ref=e351] [cursor=pointer]:
+                  - img [ref=e352]
+                  - text: 入库
+                - button "生成资源" [ref=e355] [cursor=pointer]:
+                  - img [ref=e356]
+                  - text: 生成资源
+                - button "开始测评" [ref=e359] [cursor=pointer]:
+                  - img [ref=e360]
+                  - text: 开始测评
+                - button "查看路径" [ref=e363] [cursor=pointer]:
+                  - img [ref=e364]
+                  - text: 查看路径
+              - button "发送问题" [ref=e368] [cursor=pointer]:
+                - img [ref=e369]
+                - generic [ref=e372]: Run RAG Chat
+                - text: 发送
+            - generic "Resource type filters" [ref=e373]:
+              - button "LECTURE" [pressed] [ref=e374] [cursor=pointer]
+              - button "MIND_MAP" [pressed] [ref=e375] [cursor=pointer]
+              - button "EXERCISE" [pressed] [ref=e376] [cursor=pointer]
+              - button "READING" [pressed] [ref=e377] [cursor=pointer]
+              - button "CODE_LAB" [pressed] [ref=e378] [cursor=pointer]
+      - generic "Detailed AI learning controls" [ref=e379]:
+        - generic [ref=e380]:
+          - generic [ref=e381]:
+            - paragraph [ref=e382]: 学生端 / Course RAG + Agent Generation + Assessment
+            - heading "学生端 Learning Loop 工作台 / Student Learning Loop" [level=2] [ref=e383]
+            - paragraph [ref=e384]: 围绕画像、RAG 引用、学习路径、资源审核和测评反馈完成一条可解释的学习闭环。
+          - button "发送问题 / Run RAG Chat" [ref=e385] [cursor=pointer]:
+            - img [ref=e386]
+            - generic [ref=e389]: 发送问题 / Run RAG Chat
+        - region "Workflow status" [ref=e390]:
+          - generic [ref=e391]:
+            - img [ref=e392]
+            - strong [ref=e395]: 画像
+          - generic [ref=e396]:
+            - img [ref=e397]
+            - strong [ref=e400]: 知识库
+          - generic [ref=e401]:
+            - img [ref=e402]
+            - strong [ref=e405]: 课程资料 Documents
+          - strong [ref=e408]: RAG 问答
+          - strong [ref=e411]: 引用来源
+          - generic [ref=e412]:
+            - img [ref=e413]
+            - strong [ref=e416]: 学习路径
+          - strong [ref=e419]: 生成资源
+          - strong [ref=e422]: 测评反馈
+        - region "Learning cockpit summary" [ref=e423]:
+          - article [ref=e424]:
+            - generic [ref=e425]: 学习目标摘要
+            - strong [ref=e426]: PRIVATE
+            - paragraph [ref=e427]: Java backend course materials / 掌握 RAG 的核心概念与实践应用
+          - article [ref=e428]:
+            - generic [ref=e429]: 今日进度
+            - strong [ref=e430]: IDLE
+            - paragraph [ref=e431]: "SSE stage: status / token / done events"
+          - article [ref=e432]:
+            - generic [ref=e433]: 当前主题
+            - strong [ref=e434]: res_task_draft
+            - paragraph [ref=e435]: RAG 检索流程与向量检索基础
+          - article [ref=e436]:
+            - generic [ref=e437]: 重规划记录
+            - strong [ref=e438]: Not created
+            - paragraph [ref=e439]: assessment-triggered path update
+          - article [ref=e440]:
+            - generic [ref=e441]: 课程资料 Documents
+            - strong [ref=e442]: 1 / 0
+            - paragraph [ref=e443]: indexed / pending async index tasks
+          - article [ref=e444]:
+            - generic [ref=e445]: 平均掌握度
+            - strong [ref=e446]: 44%
+            - paragraph [ref=e447]: path and assessment aggregate
+        - generic [ref=e448]:
+          - generic [ref=e449]:
+            - article [ref=e450]:
+              - generic [ref=e451]:
+                - generic [ref=e452]:
+                  - paragraph [ref=e453]: RAG 问答区 / RAG Chat
+                  - heading "Why does SQL JOIN duplicate rows?" [level=3] [ref=e454]
+                - img [ref=e455]
+              - generic [ref=e457]:
+                - generic [ref=e458]: 问题输入
+                - textbox "问题输入" [ref=e459]:
+                  - /placeholder: 请输入你的问题...
+                  - text: Why does SQL JOIN duplicate rows?
+              - paragraph [ref=e460]: Ask against kb_java_backend to retrieve grounded course guidance.
+              - generic [ref=e461]:
+                - img [ref=e462]
+                - generic [ref=e465]: 流式阶段 SSE stage
+                - strong [ref=e466]: IDLE
+              - generic [ref=e467]:
+                - text: traceId
+                - strong [ref=e468]: trc_idle
+              - generic [ref=e469]:
+                - img [ref=e470]
+                - generic [ref=e472]:
+                  - strong [ref=e473]: 无可靠来源，系统暂不回答
+                  - paragraph [ref=e474]: 未检索到足够可靠的课程来源时，系统拒绝编造答案。你可以换一种问法，或请教师补充课程资料。
+                  - generic [ref=e475]: "no source / traceId: trace_xyz789 / 最低相似度阈值 0.70"
+            - article [ref=e476]:
+              - generic [ref=e477]:
+                - generic [ref=e478]:
+                  - paragraph [ref=e479]: 引用来源列表 / Citations
+                  - heading "可解释来源" [level=3] [ref=e480]
+                - img [ref=e481]
+              - list [ref=e484]:
+                - listitem [ref=e485]:
+                  - strong [ref=e486]: database-course.md
+                  - generic [ref=e487]: 页码 p.12 / Multi table joins / score 0.87
+                  - paragraph [ref=e488]: JOIN duplicates usually come from one-to-many relationships.
+                  - generic [ref=e489]: "documentId: doc_001 / chunkId: chunk_001"
+              - generic [ref=e490]:
+                - strong [ref=e491]: 接口数据来源
+                - generic [ref=e492]: POST /api/rag/query
+                - generic [ref=e493]: "GET /api/agent/tasks/{taskId}/trace"
+            - article [ref=e494]:
+              - generic [ref=e495]:
+                - generic [ref=e496]:
+                  - paragraph [ref=e497]: 学习路径节点 / Learning Path
+                  - heading "可追踪下一步" [level=3] [ref=e498]
+                - img [ref=e499]
+              - generic [ref=e503]:
+                - generic [ref=e504]:
+                  - generic [ref=e505]:
+                    - strong [ref=e506]: HTTP Controllers
+                    - emphasis [ref=e507]: READY
+                  - paragraph [ref=e508]: Controller basics are stable enough for API workflow practice.
+                  - generic "HTTP Controllers mastery" [ref=e509]
+                - generic [ref=e511]:
+                  - generic [ref=e512]:
+                    - strong [ref=e513]: SQL JOIN Diagnosis
+                    - emphasis [ref=e514]: ACTIVE
+                  - paragraph [ref=e515]: Weak point detected from profile extraction and prior answers.
+                  - generic "SQL JOIN Diagnosis mastery" [ref=e516]
+                - generic [ref=e518]:
+                  - generic [ref=e519]:
+                    - strong [ref=e520]: Cited RAG Service
+                    - emphasis [ref=e521]: LOCKED
+                  - paragraph [ref=e522]: Unlock after retrieval, citation grounding, and JOIN correction.
+                  - generic "Cited RAG Service mastery" [ref=e523]
+          - generic [ref=e525]:
+            - article [ref=e526]:
+              - generic [ref=e527]:
+                - generic [ref=e528]:
+                  - paragraph [ref=e529]: 当前画像 / Learning Profile
+                  - heading "stu_001" [level=3] [ref=e530]
+                - img [ref=e531]
+              - generic [ref=e534]:
+                - generic [ref=e535]: 画像补充信息
+                - textbox "画像补充信息" [ref=e536]:
+                  - /placeholder: 描述学习目标、当前卡点和资源偏好
+                  - text: I want to master Java backend project delivery. SQL JOIN diagnosis and cited RAG service are my weak points; I prefer code examples and project practice.
+              - button "更新画像" [ref=e537] [cursor=pointer]:
+                - img [ref=e538]
+                - text: 更新画像
+              - generic [ref=e541]:
+                - generic [ref=e542]:
+                  - term [ref=e543]: 专业
+                  - definition [ref=e544]: Software Engineering
+                - generic [ref=e545]:
+                  - term [ref=e546]: 学习目标
+                  - definition [ref=e547]: Master Java backend project delivery
+                - generic [ref=e548]:
+                  - term [ref=e549]: 薄弱点
+                  - definition [ref=e550]: SQL JOIN diagnosis
+                - generic [ref=e551]:
+                  - term [ref=e552]: 偏好
+                  - definition [ref=e553]: Code examples and project practice
+            - article [ref=e554]:
+              - generic [ref=e555]:
+                - generic [ref=e556]:
+                  - paragraph [ref=e557]: 知识库 / Knowledge Bases
+                  - heading "Java backend course materials" [level=3] [ref=e558]
+                - img [ref=e559]
+              - generic [ref=e563] [cursor=pointer]:
+                - img [ref=e564]
+                - generic [ref=e568]: 选择课程资料
+                - button "选择课程资料" [ref=e569]
+              - button "上传课程资料" [ref=e570] [cursor=pointer]:
+                - img [ref=e571]
+                - text: 上传课程资料
+              - list "Documents" [ref=e574]:
+                - listitem [ref=e575]:
+                  - img [ref=e576]
+                  - generic [ref=e580]:
+                    - strong [ref=e581]: database-course.md
+                    - generic [ref=e582]: Markdown / idx_done_001 / 84 chunks
+                  - emphasis [ref=e583]: INDEXED
+                - listitem [ref=e584]:
+                  - img [ref=e585]
+                  - generic [ref=e589]:
+                    - strong [ref=e590]: spring-boot-api-notes.pdf
+                    - generic [ref=e591]: PDF / idx_done_002 / 126 chunks
+                  - emphasis [ref=e592]: READY
+            - article [ref=e593]:
+              - generic [ref=e594]:
+                - generic [ref=e595]:
+                  - paragraph [ref=e596]: 生成资源状态 / Generated Resources
+                  - heading "审核闸口资源架" [level=3] [ref=e597]
+                - img [ref=e598]
+              - group "资源类型" [ref=e601]:
+                - generic [ref=e602]: 资源类型
+                - generic [ref=e603] [cursor=pointer]:
+                  - checkbox "LECTURE" [checked] [ref=e604]
+                  - generic [ref=e605]: LECTURE
+                - generic [ref=e606] [cursor=pointer]:
+                  - checkbox "MIND_MAP" [checked] [ref=e607]
+                  - generic [ref=e608]: MIND_MAP
+                - generic [ref=e609] [cursor=pointer]:
+                  - checkbox "EXERCISE" [checked] [ref=e610]
+                  - generic [ref=e611]: EXERCISE
+                - generic [ref=e612] [cursor=pointer]:
+                  - checkbox "READING" [checked] [ref=e613]
+                  - generic [ref=e614]: READING
+                - generic [ref=e615] [cursor=pointer]:
+                  - checkbox "CODE_LAB" [checked] [ref=e616]
+                  - generic [ref=e617]: CODE_LAB
+              - button "AI 生成资源" [ref=e618] [cursor=pointer]:
+                - img [ref=e619]
+                - text: AI 生成资源
+              - button "查看状态" [disabled] [ref=e622]:
+                - img [ref=e623]
+                - text: 查看状态
+              - generic [ref=e626]:
+                - text: Resource traceId
+                - strong [ref=e627]: trc_resource_local
+              - generic [ref=e628]:
+                - generic [ref=e629]:
+                  - term [ref=e630]: 任务状态
+                  - definition [ref=e631]: DRAFT
+                - generic [ref=e632]:
+                  - term [ref=e633]: 审核状态
+                  - definition [ref=e634]: PENDING_CRITIC
+                - generic [ref=e635]:
+                  - term [ref=e636]: 进度
+                  - definition [ref=e637]: 0%
+                - generic [ref=e638]:
+                  - term [ref=e639]: 安全
+                  - definition [ref=e640]: PENDING
+              - generic "Resource review status board" [ref=e641]:
+                - generic [ref=e642]:
+                  - generic [ref=e643]:
+                    - strong [ref=e644]: 已批准 approved
+                    - generic [ref=e645]: "0"
+                  - list [ref=e646]
+                  - paragraph [ref=e647]: 暂无已批准资源。
+                - generic [ref=e648]:
+                  - generic [ref=e649]:
+                    - strong [ref=e650]: 待教师审核 pending review
+                    - generic [ref=e651]: "2"
+                  - list [ref=e652]:
+                    - listitem [ref=e653]:
+                      - generic [ref=e654]:
+                        - strong [ref=e655]: LECTURE
+                        - generic: JOIN duplication walkthrough
+                        - emphasis [ref=e656]: PENDING_CRITIC
+                      - generic [ref=e657]: res_local_001 / TEXT / PENDING
+                      - paragraph [ref=e658]: database-course.md p.12
+                      - blockquote [ref=e659]: Local draft resource body
+                    - listitem [ref=e660]:
+                      - generic [ref=e661]:
+                        - strong [ref=e662]: EXERCISE
+                        - generic: Fix a one-to-many query
+                        - emphasis [ref=e663]: PENDING_CRITIC
+                      - generic [ref=e664]: res_local_002 / TEXT / PENDING
+                      - paragraph [ref=e665]: database-course.md p.14
+                      - blockquote [ref=e666]: Local exercise draft body
+                - generic [ref=e667]:
+                  - generic [ref=e668]:
+                    - strong [ref=e669]: 退回修改 returned
+                    - generic [ref=e670]: "0"
+                  - list [ref=e671]
+                  - paragraph [ref=e672]: 暂无退回修改。
+                - generic [ref=e673]:
+                  - generic [ref=e674]:
+                    - strong [ref=e675]: 其他状态
+                    - generic [ref=e676]: "0"
+                  - list [ref=e677]
+                  - paragraph [ref=e678]: 暂无其他审核状态。
+            - article [ref=e679]:
+              - generic [ref=e680]:
+                - generic [ref=e681]:
+                  - paragraph [ref=e682]: 测评反馈 / Assessment
+                  - heading "JOIN 诊断测评" [level=3] [ref=e683]
+                - img [ref=e684]
+              - button "开始测评" [ref=e688] [cursor=pointer]
+              - generic [ref=e689]:
+                - generic [ref=e690]: 作答内容
+                - textbox "作答内容" [ref=e691]:
+                  - /placeholder: 提交前请说明你的推理过程
+                  - text: A JOIN duplicates parent rows when multiple child rows match; aggregate or constrain child rows before projecting.
+              - paragraph [ref=e692]: Waiting for answer
+              - generic [ref=e693]:
+                - generic [ref=e694]:
+                  - generic [ref=e695]: 掌握度 Mastery
+                  - strong [ref=e696]: 42%
+                - generic "Mastery" [ref=e697]
+              - generic [ref=e699]:
+                - text: 重规划 Replan
+                - strong [ref=e700]: Not created
+            - article [ref=e701]:
+              - generic [ref=e702]:
+                - generic [ref=e703]:
+                  - paragraph [ref=e704]: 画像维度 / Profile Dimensions
+                  - heading "维度证据" [level=3] [ref=e705]
+                - img [ref=e706]
+              - list [ref=e709]:
+                - listitem [ref=e710]:
+                  - strong [ref=e711]: professional_background
+                  - generic [ref=e712]: Software engineering sophomore / confidence 0.82
+                  - paragraph [ref=e713]: Learner stated major and year.
+                - listitem [ref=e714]:
+                  - strong [ref=e715]: learning_goal
+                  - generic [ref=e716]: Java backend delivery / confidence 0.88
+                  - paragraph [ref=e717]: Goal names Spring Boot APIs.
+                - listitem [ref=e718]:
+                  - strong [ref=e719]: knowledge_base
+                  - generic [ref=e720]: Controller basics known / confidence 0.74
+                  - paragraph [ref=e721]: Prior API practice.
+                - listitem [ref=e722]:
+                  - strong [ref=e723]: knowledge_gap
+                  - generic [ref=e724]: SQL JOIN cardinality / confidence 0.9
+                  - paragraph [ref=e725]: Repeated wrong answers.
+                - listitem [ref=e726]:
+                  - strong [ref=e727]: cognitive_style
+                  - generic [ref=e728]: Worked examples before abstraction / confidence 0.7
+                  - paragraph [ref=e729]: Prefers code labs.
+                - listitem [ref=e730]:
+                  - strong [ref=e731]: resource_preference
+                  - generic [ref=e732]: Code labs and diagrams / confidence 0.78
+                  - paragraph [ref=e733]: Explicit resource request.
+          - generic [ref=e734]:
+            - article [ref=e735]:
+              - generic [ref=e736]:
+                - generic [ref=e737]:
+                  - paragraph [ref=e738]: Agent Trace
+                  - heading "小时间线 Timeline" [level=3] [ref=e739]
+                - img [ref=e740]
+              - list [ref=e744]:
+                - listitem [ref=e745]:
+                  - generic [ref=e746]:
+                    - strong [ref=e747]: ProfileAgent
+                    - emphasis [ref=e748]: DONE
+                  - paragraph [ref=e749]: Extracted major, goal, weak point, and resource preference.
+                  - generic [ref=e750]: 180 ms
+                - listitem [ref=e751]:
+                  - generic [ref=e752]:
+                    - strong [ref=e753]: PathPlannerAgent
+                    - emphasis [ref=e754]: DONE
+                  - paragraph [ref=e755]: Selected active node from learner profile and dependency graph.
+                  - generic [ref=e756]: 240 ms
+                - listitem [ref=e757]:
+                  - generic [ref=e758]:
+                    - strong [ref=e759]: CourseRagAgent
+                    - emphasis [ref=e760]: PENDING
+                  - paragraph [ref=e761]: Waiting for a query to retrieve, rerank, and cite sources.
+                  - generic [ref=e762]: 0 ms
+            - article [ref=e763]:
+              - generic [ref=e764]:
+                - generic [ref=e765]:
+                  - paragraph [ref=e766]: 接口数据来源
+                  - heading "当前页面主要 API" [level=3] [ref=e767]
+                - img [ref=e768]
+              - list [ref=e772]:
+                - listitem [ref=e773]: GET /api/student/profile
+                - listitem [ref=e774]: GET /api/learning/goals
+                - listitem [ref=e775]: GET /api/learning/path
+                - listitem [ref=e776]: POST /api/rag/query
+                - listitem [ref=e777]: GET /api/rag/citations
+                - listitem [ref=e778]: "GET /api/resources/generation-tasks/{taskId}"
+                - listitem [ref=e779]: POST /api/assessment/answers
+            - article [ref=e780]:
+              - generic [ref=e781]:
+                - generic [ref=e782]:
+                  - paragraph [ref=e783]: 状态展示方式
+                  - heading "关键状态示例" [level=3] [ref=e784]
+                - img [ref=e785]
+              - generic [ref=e788]:
+                - generic [ref=e789]: loading 骨架屏
+                - generic [ref=e790]: failed 重试
+                - generic [ref=e791]: empty 空状态
+                - generic [ref=e792]: pending review 待教师审核
+                - generic [ref=e793]: no source 拒答
+                - generic [ref=e794]: approved 已批准
+  - complementary "AI 思考流" [ref=e795]:
+    - generic [ref=e796]:
+      - generic [ref=e797]:
+        - img [ref=e799]
+        - generic [ref=e802]:
+          - paragraph [ref=e803]: Thought Stream
+          - heading "AI 思考流" [level=2] [ref=e804]
+      - generic [ref=e805]:
+        - button "折叠 AI 思考流" [ref=e806] [cursor=pointer]:
+          - img [ref=e807]
+        - button "隐藏 AI 思考流" [ref=e809] [cursor=pointer]:
+          - img [ref=e810]
+    - generic [ref=e813]:
+      - region "当前任务" [ref=e814]:
+        - generic [ref=e815]:
+          - generic [ref=e816]:
+            - text: 当前任务
+            - heading "为“极限概念”生成学习资源" [level=3] [ref=e817]
+          - emphasis [ref=e818]: running
+        - generic [ref=e819]:
+          - generic [ref=e820]:
+            - img [ref=e821]
+            - term [ref=e825]: 任务类型
+            - definition [ref=e826]: 资源生成
+          - generic [ref=e827]:
+            - img [ref=e828]
+            - term [ref=e831]: 模型
+            - definition [ref=e832]: gpt-4o-mini
+          - generic [ref=e833]:
+            - img [ref=e834]
+            - term [ref=e843]: Trace ID
+            - definition [ref=e844]: trc_resource_limit_concept_demo
+          - generic [ref=e845]:
+            - img [ref=e846]
+            - term [ref=e849]: 开始时间
+            - definition [ref=e850]: 2026-06-13 16:40
+          - generic [ref=e851]:
+            - img [ref=e852]
+            - term [ref=e854]: 状态
+            - definition [ref=e855]: 执行中
+      - region "Agent 执行流程" [ref=e856]:
+        - generic [ref=e857]:
+          - generic [ref=e858]:
+            - text: Agent 执行流程
+            - heading "Agent timeline" [level=3] [ref=e859]
+          - generic [ref=e860]: "7"
+        - list [ref=e861]:
+          - listitem [ref=e862]:
+            - img [ref=e864]
+            - generic [ref=e867]:
+              - generic [ref=e868]:
+                - strong [ref=e869]: PlannerAgent
+                - emphasis [ref=e870]: done
+              - paragraph [ref=e871]: 拆解学习目标，确定极限概念的知识前置与资源结构。
+              - generic [ref=e872]: 42 ms
+          - listitem [ref=e873]:
+            - img [ref=e875]
+            - generic [ref=e878]:
+              - generic [ref=e879]:
+                - strong [ref=e880]: TeacherAgent
+                - emphasis [ref=e881]: done
+              - paragraph [ref=e882]: 生成面向学生的概念解释框架和关键例题提示。
+              - generic [ref=e883]: 61 ms
+          - listitem [ref=e884]:
+            - img [ref=e886]
+            - generic [ref=e888]:
+              - generic [ref=e889]:
+                - strong [ref=e890]: ResourceAgent
+                - emphasis [ref=e891]: running
+              - paragraph [ref=e892]: 正在组织讲义、练习、阅读卡片和代码/图示资源。
+              - generic [ref=e893]: running
+          - listitem [ref=e894]:
+            - img [ref=e896]
+            - generic [ref=e899]:
+              - generic [ref=e900]:
+                - strong [ref=e901]: QuestionAgent
+                - emphasis [ref=e902]: waiting
+              - paragraph [ref=e903]: 等待资源草稿后生成形成性测评题。
+              - generic [ref=e904]: "-"
+          - listitem [ref=e905]:
+            - img [ref=e907]
+            - generic [ref=e910]:
+              - generic [ref=e911]:
+                - strong [ref=e912]: CriticAgent
+                - emphasis [ref=e913]: waiting
+              - paragraph [ref=e914]: 等待草稿完成后检查引用、准确性和学习画像匹配。
+              - generic [ref=e915]: "-"
+          - listitem [ref=e916]:
+            - img [ref=e918]
+            - generic [ref=e921]:
+              - generic [ref=e922]:
+                - strong [ref=e923]: TutorAgent
+                - emphasis [ref=e924]: waiting
+              - paragraph [ref=e925]: 等待审核通过后准备面向学生的讲解节奏。
+              - generic [ref=e926]: "-"
+          - listitem [ref=e927]:
+            - img [ref=e929]
+            - generic [ref=e932]:
+              - generic [ref=e933]:
+                - strong [ref=e934]: SafetyAgent
+                - emphasis [ref=e935]: waiting
+              - paragraph [ref=e936]: 等待最终草稿后执行安全与无来源风险检查。
+              - generic [ref=e937]: "-"
+      - region "检索来源 RAG" [ref=e938]:
+        - generic [ref=e939]:
+          - generic [ref=e940]:
+            - text: 检索来源 RAG
+            - heading "Grounding evidence" [level=3] [ref=e941]
+          - img [ref=e942]
+        - generic [ref=e946]:
+          - generic [ref=e947]:
+            - term [ref=e948]: 命中知识库
+            - definition [ref=e949]: 高等数学课程知识库
+          - generic [ref=e950]:
+            - term [ref=e951]: 命中 chunk 数
+            - definition [ref=e952]: "8"
+        - list "来源文档列表" [ref=e953]:
+          - listitem [ref=e954]:
+            - img [ref=e955]
+            - generic [ref=e958]:
+              - strong [ref=e959]: calculus-limit-notes.md
+              - generic [ref=e960]:
+                - img [ref=e961]
+                - text: 极限的直观定义 / p.12 / score 0.94
+              - paragraph [ref=e965]: 函数值可以无限接近某个稳定数值，但并不要求在该点一定有定义。
+          - listitem [ref=e966]:
+            - img [ref=e967]
+            - generic [ref=e970]:
+              - strong [ref=e971]: epsilon-delta-examples.pdf
+              - generic [ref=e972]:
+                - img [ref=e973]
+                - text: ε-δ 语言示例 / p.4 / score 0.88
+              - paragraph [ref=e977]: 用任意小误差约束函数值与目标值之间的距离。
+          - listitem [ref=e978]:
+            - img [ref=e979]
+            - generic [ref=e982]:
+              - strong [ref=e983]: limit-practice-set.md
+              - generic [ref=e984]:
+                - img [ref=e985]
+                - text: 常见误区 / p.2 / score 0.81
+              - paragraph [ref=e989]: 把趋近过程误读成代入计算，是初学极限时最常见的问题。
+      - region "运行指标" [ref=e990]:
+        - generic [ref=e992]:
+          - text: 运行指标
+          - heading "Runtime metrics" [level=3] [ref=e993]
+        - generic [ref=e994]:
+          - article [ref=e995]:
+            - img [ref=e996]
+            - generic [ref=e999]: Latency
+            - strong [ref=e1000]: 1.28 s
+          - article [ref=e1001]:
+            - img [ref=e1002]
+            - generic [ref=e1006]: Total Tokens
+            - strong [ref=e1007]: 2,846
+          - article [ref=e1008]:
+            - img [ref=e1009]
+            - generic [ref=e1013]: Model Calls
+            - strong [ref=e1014]: "3"
+          - article [ref=e1015]:
+            - img [ref=e1016]
+            - generic [ref=e1019]: Fallback
+            - strong [ref=e1020]: 未触发
+          - article [ref=e1021]:
+            - img [ref=e1022]
+            - generic [ref=e1025]: Safety
+            - strong [ref=e1026]: 执行中
