@@ -91,7 +91,7 @@ function displayStatus(status: string) {
       </section>
     </div>
 
-    <p v-else class="empty-state">还没有生成资源。点击底部输入区的“生成资源”后，这里会展示微课、练习题、知识总结和错题解析。</p>
+    <p v-else class="empty-state">??????</p>
   </article>
 </template>
 

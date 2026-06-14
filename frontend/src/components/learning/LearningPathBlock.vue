@@ -50,7 +50,7 @@ function displayStatus(status: PathNode['status']) {
       </section>
     </div>
 
-    <p v-else class="empty-state">学习路径正在生成。若后端暂时没有节点，这里会保持空状态而不阻塞问答。</p>
+    <p v-else class="empty-state">??????</p>
   </article>
 </template>
 

@@ -21,43 +21,35 @@ function displayReplanRecordId(replanRecordId: string) {
   <article class="stream-block assessment-block">
     <div class="block-heading">
       <div>
-        <p class="eyebrow">测评反馈</p>
-        <h3>测评反馈卡片</h3>
+        <p class="eyebrow">????</p>
+        <h3>????</h3>
       </div>
       <ClipboardCheck :size="19" aria-hidden="true" />
     </div>
 
     <section class="feedback-stats" aria-label="Assessment stats">
       <article>
-        <span>分数</span>
-        <strong>{{ score }}</strong>
-      </article>
-      <article>
-        <span>掌握度变化</span>
-        <strong>+{{ Math.max(score - 42, 0) }}%</strong>
-      </article>
-      <article>
-        <span>正确率</span>
+        <span>??</span>
         <strong>{{ score }}%</strong>
       </article>
       <article>
-        <span>重规划</span>
+        <span>???</span>
         <strong>{{ displayReplanRecordId(replanRecordId) }}</strong>
       </article>
     </section>
 
-    <p class="feedback-copy">{{ status }}</p>
+    <p v-if="status" class="feedback-copy">{{ status }}</p>
+    <p v-else class="feedback-copy empty-state">??????</p>
     <label class="answer-editor">
-      <span>测评作答内容</span>
+      <span>??????</span>
       <textarea
         :value="assessmentAnswer"
         data-test="assessment-answer-input"
         rows="3"
-        placeholder="提交测评前，可以在这里写下你的推理过程。"
+        placeholder="??????"
         @input="$emit('update:assessmentAnswer', ($event.target as HTMLTextAreaElement).value)"
       ></textarea>
     </label>
-    <p class="suggestion">学习建议：先用一个左右趋近的例子描述“无限接近但不一定取到”，再进入 ε-δ 形式化定义。</p>
   </article>
 </template>
 

@@ -36,7 +36,7 @@ function toggleResourceType(type: string, selectedTypes: string[], emit: (event:
         :value="question"
         data-test="rag-question-input"
         rows="2"
-        placeholder="问 AI 导师：极限为什么可以描述“无限接近”？"
+        placeholder="Input question"
         @input="$emit('update:question', ($event.target as HTMLTextAreaElement).value)"
       ></textarea>
 

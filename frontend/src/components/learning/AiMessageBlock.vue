@@ -30,19 +30,18 @@ function displayStage(stage: string) {
     <div class="message-bubble">
       <div class="ai-heading">
         <div>
-          <p class="message-label">AI 导师</p>
-          <h3>极限概念学习助手</h3>
+          <p class="message-label">AI ??</p>
+          <h3>AI ??</h3>
         </div>
         <span class="stage-pill">{{ displayStage(stage) }}</span>
       </div>
-      <p class="answer-text">
-        {{ answer || '我会优先检索课程知识库，再用带引用的方式解释极限概念。发送问题后，这里会显示 AI 导师的回答。' }}
-      </p>
+      <p v-if="answer" class="answer-text">{{ answer }}</p>
+      <p v-else class="answer-empty">Waiting for input</p>
       <SourceTags :sources="sources" />
-      <p class="trace-line">追踪 ID: {{ traceId }}</p>
+      <p v-if="traceId" class="trace-line">Trace ID: {{ traceId }}</p>
       <div v-if="sources.length === 0" class="no-source-card" data-test="no-source-card">
         <AlertTriangle :size="17" aria-hidden="true" />
-        <span>当前还没有可展示的课程引用。若后端返回空来源，页面会保留回答区并提示补充资料。</span>
+        <span>??????</span>
       </div>
       <p v-if="errorMessage" class="error-text" role="status">{{ errorMessage }}</p>
     </div>
@@ -109,12 +108,17 @@ function displayStage(stage: string) {
   border-radius: 999px;
 }
 
-.answer-text {
+.answer-text,
+.answer-empty {
   color: #243041;
   font-size: 15px;
   line-height: 1.65;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+.answer-empty {
+  color: #8a97aa;
 }
 
 .trace-line {

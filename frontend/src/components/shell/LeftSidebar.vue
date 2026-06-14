@@ -90,31 +90,7 @@ const navigation: SidebarNavItem[] = [
   },
 ]
 
-const historyGroups: HistoryGroup[] = [
-  {
-    label: '今天',
-    items: [
-      { title: '微积分极限入门学习', type: '学习任务', time: '09:40', status: 'active' },
-      { title: 'RAG 课程资料问答', type: 'RAG 问答', time: '11:12', status: 'done' },
-      { title: '函数连续性错题讲解', type: '错题讲解', time: '14:28', status: 'draft' },
-    ],
-  },
-  {
-    label: '最近 7 天',
-    items: [
-      { title: '线性代数第 2 章复习', type: '复习计划', time: '周四', status: 'done' },
-      { title: '概率论练习题生成', type: '资源生成', time: '周三', status: 'active' },
-      { title: '导数概念资源生成', type: '资源生成', time: '周一', status: 'done' },
-    ],
-  },
-  {
-    label: '更早',
-    items: [
-      { title: '高等数学复习计划', type: '学习路径', time: '5月', status: 'done' },
-      { title: '英语阅读学习路径', type: '学习路径', time: '4月', status: 'draft' },
-    ],
-  },
-]
+const historyGroups: HistoryGroup[] = []
 
 const normalizedSearch = computed(() => historySearch.value.trim().toLowerCase())
 

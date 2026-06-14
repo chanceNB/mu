@@ -6,12 +6,12 @@ defineProps<{
 </script>
 
 <template>
-  <article class="message-row user-message">
-    <div class="message-avatar">我</div>
+  <article v-if="question || profilePrompt" class="message-row user-message">
+    <div class="message-avatar">?</div>
     <div class="message-bubble">
-      <p class="message-label">用户</p>
-      <h3>{{ question || '输入一个关于课程内容的问题，AI 导师会基于课程资料回答。' }}</h3>
-      <p class="prompt-note">{{ profilePrompt }}</p>
+      <p class="message-label">??</p>
+      <h3 v-if="question">{{ question }}</h3>
+      <p v-if="profilePrompt" class="prompt-note">{{ profilePrompt }}</p>
     </div>
   </article>
 </template>

@@ -8,6 +8,9 @@ interface WorkflowStep {
 }
 
 defineProps<{
+  title?: string
+  courseName?: string
+  topicName?: string
   stage: string
   mastery: number
   indexedDocuments: number
@@ -30,11 +33,11 @@ function displayStage(stage: string) {
   <header class="workspace-chat-header">
     <div class="session-title">
       <p class="eyebrow">AI 学习工作区</p>
-      <h2>微积分分极限入门学习</h2>
+      <h2>{{ title || 'AI Learning Workspace' }}</h2>
       <div class="session-meta" aria-label="Course context">
-        <span>课程：高等数学</span>
-        <span>知识点：极限概念</span>
-        <span class="progress-pill">学习进度：进行中</span>
+        <span v-if="courseName">Course: {{ courseName }}</span>
+        <span v-if="topicName">Topic: {{ topicName }}</span>
+        <span class="progress-pill">In progress</span>
       </div>
     </div>
 
