@@ -21,7 +21,7 @@ defineProps<{
       <BookOpen :size="14" aria-hidden="true" />
       {{ source.documentName }}
       <small v-if="source.pageNum">p.{{ source.pageNum }}</small>
-      <small v-if="source.score">score {{ source.score }}</small>
+      <small v-if="source.score">分数 {{ source.score }}</small>
     </span>
   </div>
 </template>

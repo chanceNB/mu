@@ -95,6 +95,7 @@ AI Learning OS 前端
 | Feature | Status | Related Docs | Notes |
 |---|---|---|---|
 | AI development workflow initialization | INIT | AGENTS.md | Codex + Cursor workflow |
+| Student resource review status board layout | Done | `docs/tasks/TASK-20260613-resource-status-board-layout.md` | CSS-only fix: status board max 2 columns, 1 column below 900px, resource titles wrap by word instead of character, and review status pills no longer squeeze titles |
 | Frontend medium-fidelity UI prototype refactor | Done | `docs/specs/SPEC-20260606-frontend-ui-prototype-refactor.md` | Student, teacher, and admin Vue pages now match the provided Chinese SaaS cockpit wireframes with AI/RAG/Agent/status color semantics and stable backend/API boundaries |
 | Prompt Version management foundation | Done | `docs/specs/SPEC-20260605-prompt-version-management.md` | Added backend JPA/API/service/tests for existing `prompt_version` table |
 | Model call prompt metadata | Done | `docs/specs/SPEC-20260606-model-call-prompt-metadata.md` | `model_call_log` now persists prompt code/version, temperature, structured output schema, and sanitized provider error evidence |

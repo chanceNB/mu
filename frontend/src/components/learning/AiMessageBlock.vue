@@ -10,6 +10,16 @@ defineProps<{
   sources: CitationSource[]
   errorMessage: string
 }>()
+
+function displayStage(stage: string) {
+  const stageLabels: Record<string, string> = {
+    IDLE: '空闲',
+    RETRIEVING: '检索中',
+    DONE: '完成',
+    ERROR: '错误',
+  }
+  return stageLabels[stage] ?? stage
+}
 </script>
 
 <template>
@@ -20,16 +30,16 @@ defineProps<{
     <div class="message-bubble">
       <div class="ai-heading">
         <div>
-          <p class="message-label">AI Tutor</p>
+          <p class="message-label">AI 导师</p>
           <h3>极限概念学习助手</h3>
         </div>
-        <span class="stage-pill">{{ stage }}</span>
+        <span class="stage-pill">{{ displayStage(stage) }}</span>
       </div>
       <p class="answer-text">
-        {{ answer || '我会优先检索课程知识库，再用带引用的方式解释极限概念。发送问题后，这里会显示 AI Tutor 的回答。' }}
+        {{ answer || '我会优先检索课程知识库，再用带引用的方式解释极限概念。发送问题后，这里会显示 AI 导师的回答。' }}
       </p>
       <SourceTags :sources="sources" />
-      <p class="trace-line">traceId: {{ traceId }}</p>
+      <p class="trace-line">追踪 ID: {{ traceId }}</p>
       <div v-if="sources.length === 0" class="no-source-card" data-test="no-source-card">
         <AlertTriangle :size="17" aria-hidden="true" />
         <span>当前还没有可展示的课程引用。若后端返回空来源，页面会保留回答区并提示补充资料。</span>

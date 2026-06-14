@@ -14,12 +14,22 @@ defineProps<{
   pendingDocuments: number
   workflowSteps: WorkflowStep[]
 }>()
+
+function displayStage(stage: string) {
+  const stageLabels: Record<string, string> = {
+    IDLE: '空闲',
+    RETRIEVING: '检索中',
+    DONE: '完成',
+    ERROR: '错误',
+  }
+  return stageLabels[stage] ?? stage
+}
 </script>
 
 <template>
   <header class="workspace-chat-header">
     <div class="session-title">
-      <p class="eyebrow">AI Learning Workspace</p>
+      <p class="eyebrow">AI 学习工作区</p>
       <h2>微积分分极限入门学习</h2>
       <div class="session-meta" aria-label="Course context">
         <span>课程：高等数学</span>
@@ -32,7 +42,7 @@ defineProps<{
       <label class="mode-select">
         <span class="sr-only">学习模式</span>
         <select aria-label="学习模式">
-          <option>AI Tutor</option>
+          <option>AI 导师</option>
           <option>刷题练习</option>
           <option>路径复盘</option>
         </select>
@@ -49,7 +59,7 @@ defineProps<{
     <section class="session-stats" aria-label="Learning session stats">
       <article>
         <span>RAG 阶段</span>
-        <strong>{{ stage }}</strong>
+        <strong>{{ displayStage(stage) }}</strong>
       </article>
       <article>
         <span>平均掌握度</span>

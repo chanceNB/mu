@@ -11,13 +11,17 @@ defineProps<{
 defineEmits<{
   'update:assessmentAnswer': [value: string]
 }>()
+
+function displayReplanRecordId(replanRecordId: string) {
+  return replanRecordId === 'Not created' ? '未创建' : replanRecordId
+}
 </script>
 
 <template>
   <article class="stream-block assessment-block">
     <div class="block-heading">
       <div>
-        <p class="eyebrow">Assessment Feedback</p>
+        <p class="eyebrow">测评反馈</p>
         <h3>测评反馈卡片</h3>
       </div>
       <ClipboardCheck :size="19" aria-hidden="true" />
@@ -29,7 +33,7 @@ defineEmits<{
         <strong>{{ score }}</strong>
       </article>
       <article>
-        <span>mastery 变化</span>
+        <span>掌握度变化</span>
         <strong>+{{ Math.max(score - 42, 0) }}%</strong>
       </article>
       <article>
@@ -38,7 +42,7 @@ defineEmits<{
       </article>
       <article>
         <span>重规划</span>
-        <strong>{{ replanRecordId }}</strong>
+        <strong>{{ displayReplanRecordId(replanRecordId) }}</strong>
       </article>
     </section>
 

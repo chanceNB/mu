@@ -684,6 +684,11 @@ button:disabled {
   gap: 8px;
 }
 
+.resource-status-board {
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  align-items: start;
+}
+
 .interface-panel,
 .status-showcase,
 .chart-panel,
@@ -853,10 +858,42 @@ button:disabled {
 .resource-shelf {
   display: grid;
   gap: 8px;
+  min-width: 0;
   padding: 11px;
   background: #fbfdff;
   border: 1px solid var(--line);
   border-radius: 10px;
+}
+
+.resource-status-board .resource-title-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 8px;
+  align-items: start;
+}
+
+.resource-status-board .resource-title-row strong,
+.resource-status-board .resource-title-row span {
+  min-width: 0;
+}
+
+.resource-status-board .resource-title-row span {
+  grid-column: 1 / -1;
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.35;
+}
+
+.resource-status-board .resource-title-row .status-pill {
+  justify-self: end;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.resource-status-board .resource-list small,
+.resource-status-board .resource-list p,
+.resource-status-board .resource-list blockquote {
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .resource-shelf.approved {
@@ -2029,5 +2066,16 @@ button:disabled {
 
   .review-actions .tool-button {
     min-height: 44px;
+  }
+}
+
+@media (max-width: 900px) {
+  .resource-status-board {
+    grid-template-columns: 1fr;
+  }
+
+  .resource-status-board .resource-title-row .status-pill {
+    grid-column: auto;
+    justify-self: end;
   }
 }

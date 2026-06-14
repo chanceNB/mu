@@ -30,13 +30,13 @@ function toggleResourceType(type: string, selectedTypes: string[], emit: (event:
 </script>
 
 <template>
-  <form class="workspace-composer" aria-label="AI tutor composer" @submit.prevent="$emit('send')">
+  <form class="workspace-composer" aria-label="AI 导师输入区" @submit.prevent="$emit('send')">
     <div class="composer-card">
       <textarea
         :value="question"
         data-test="rag-question-input"
         rows="2"
-        placeholder="问 AI Tutor：极限为什么可以描述“无限接近”？"
+        placeholder="问 AI 导师：极限为什么可以描述“无限接近”？"
         @input="$emit('update:question', ($event.target as HTMLTextAreaElement).value)"
       ></textarea>
 
@@ -91,7 +91,7 @@ function toggleResourceType(type: string, selectedTypes: string[], emit: (event:
           aria-label="发送问题"
         >
           <Send :size="17" aria-hidden="true" />
-          <span class="sr-only">Run RAG Chat</span>
+          <span class="sr-only">运行 RAG 问答</span>
           {{ loadingAction === 'rag' ? '发送中' : '发送' }}
         </button>
       </div>

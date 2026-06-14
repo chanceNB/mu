@@ -32,7 +32,7 @@ defineEmits<{
 </script>
 
 <template>
-  <section class="workspace-stream" aria-label="AI tutor conversation stream">
+  <section class="workspace-stream" aria-label="AI 导师对话流">
     <UserMessageBlock :question="question" :profile-prompt="profilePrompt" />
     <AiMessageBlock
       :answer="answer"

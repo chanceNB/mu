@@ -40,33 +40,33 @@ const form = reactive({
   apiKey: '',
   enabled: true,
   defaultProvider: false,
-  budget: 'Backend controlled',
-  priority: 'Normal',
+  budget: '后端控制',
+  priority: '普通',
 })
 
 const providerTemplates = [
   {
     code: 'openai',
     name: 'OpenAI',
-    detail: 'OpenAI-compatible production endpoint',
+    detail: 'OpenAI-compatible 生产端点',
     status: 'Preset',
   },
   {
     code: 'claude',
     name: 'Claude',
-    detail: 'Use Custom until backend exposes a first-class Claude preset',
+    detail: '在后端提供一等 Claude 预设前，请使用 Custom',
     status: 'Custom',
   },
   {
     code: 'gemini',
     name: 'Gemini',
-    detail: 'Use Custom until backend exposes a first-class Gemini preset',
+    detail: '在后端提供一等 Gemini 预设前，请使用 Custom',
     status: 'Custom',
   },
   {
     code: 'custom',
     name: 'Custom',
-    detail: 'Bring any OpenAI-compatible base URL',
+    detail: '接入任意 OpenAI-compatible Base URL',
     status: 'Manual',
   },
 ]
@@ -86,28 +86,28 @@ const backupProvider = computed(
 
 const providerMonitorItems = computed(() => [
   {
-    label: 'Primary provider',
-    value: primaryProvider.value?.displayName ?? 'Not selected',
+    label: '主 Provider',
+    value: primaryProvider.value?.displayName ?? '未选择',
     status: primaryProvider.value?.enabled ? 'ACTIVE' : 'MISSING',
   },
   {
-    label: 'Backup provider',
-    value: backupProvider.value?.displayName ?? 'No backup configured',
+    label: '备用 Provider',
+    value: backupProvider.value?.displayName ?? '未配置备用 Provider',
     status: backupProvider.value ? 'READY' : 'WAITING',
   },
   {
-    label: 'Fallback strategy',
-    value: backupProvider.value ? 'Use enabled backup when primary fails' : 'Manual recovery until backup exists',
+    label: 'Fallback 策略',
+    value: backupProvider.value ? '主 Provider 失败时使用已启用备用 Provider' : '配置备用 Provider 前需要手动恢复',
     status: backupProvider.value ? 'READY' : 'WATCH',
   },
   {
-    label: 'Last test result',
-    value: successMessage.value || errorMessage.value || 'No test result in this session',
+    label: '最近测试结果',
+    value: successMessage.value || errorMessage.value || '当前会话暂无测试结果',
     status: errorMessage.value ? 'FAILED' : successMessage.value ? 'SUCCEEDED' : 'IDLE',
   },
   {
-    label: 'Token usage',
-    value: 'Tracked in Operations analytics',
+    label: 'Token 用量',
+    value: '在运维 analytics 中跟踪',
     status: 'OBSERVED',
   },
 ])
@@ -125,7 +125,7 @@ async function loadProviders() {
       selectProvider(providers.value[0])
     }
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Unable to load model providers'
+    errorMessage.value = error instanceof Error ? error.message : '无法加载 Model Providers'
   } finally {
     isLoading.value = false
   }
@@ -147,8 +147,8 @@ function startProviderDraft(templateCode: string) {
   form.apiKey = ''
   form.defaultProvider = false
   form.enabled = true
-  form.budget = 'Backend controlled'
-  form.priority = templateCode === 'openai' ? 'High' : 'Normal'
+  form.budget = '后端控制'
+  form.priority = templateCode === 'openai' ? '高' : '普通'
 
   if (templateCode in PROVIDER_PRESETS) {
     applyPreset(templateCode)
@@ -157,7 +157,7 @@ function startProviderDraft(templateCode: string) {
 
   form.providerCode = 'custom'
   form.displayName = providerTemplates.find((template) => template.code === templateCode)?.name ?? 'Custom'
-  form.remark = templateCode === 'custom' ? '' : `${form.displayName} custom endpoint`
+  form.remark = templateCode === 'custom' ? '' : `${form.displayName} Custom endpoint`
   form.websiteUrl = ''
   form.baseUrl = ''
   form.chatModel = ''
@@ -176,8 +176,8 @@ function selectProvider(provider: ModelProviderSummary) {
   form.apiKey = provider.apiKeyMasked ?? ''
   form.enabled = provider.enabled
   form.defaultProvider = provider.defaultProvider
-  form.budget = 'Backend controlled'
-  form.priority = provider.defaultProvider ? 'High' : provider.enabled ? 'Normal' : 'Paused'
+  form.budget = '后端控制'
+  form.priority = provider.defaultProvider ? '高' : provider.enabled ? '普通' : '暂停'
 }
 
 function resetForm() {
@@ -185,8 +185,8 @@ function resetForm() {
   form.apiKey = ''
   form.defaultProvider = false
   form.enabled = true
-  form.budget = 'Backend controlled'
-  form.priority = 'Normal'
+  form.budget = '后端控制'
+  form.priority = '普通'
   applyPreset('deepseek')
 }
 
@@ -210,11 +210,11 @@ async function saveProvider() {
     const saved = isEditing.value
       ? await updateModelProvider(selectedProviderId.value, payload)
       : await createModelProvider(payload)
-    successMessage.value = isEditing.value ? 'Provider configuration updated.' : 'Provider created.'
+    successMessage.value = isEditing.value ? 'Provider 配置已更新。' : 'Provider 已创建。'
     await loadProviders()
     selectProvider(saved)
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Unable to save model provider'
+    errorMessage.value = error instanceof Error ? error.message : '无法保存 Model Provider'
   } finally {
     isSaving.value = false
   }
@@ -224,11 +224,11 @@ async function markDefault(provider: ModelProviderSummary) {
   errorMessage.value = ''
   try {
     const updated = await setDefaultModelProvider(provider.id)
-    successMessage.value = `${updated.displayName} is now the default provider.`
+    successMessage.value = `${updated.displayName} 已设为默认 Provider。`
     await loadProviders()
     selectProvider(updated)
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Unable to set default provider'
+    errorMessage.value = error instanceof Error ? error.message : '无法设置默认 Provider'
   }
 }
 
@@ -239,12 +239,12 @@ async function testConnection(provider: ModelProviderSummary) {
   try {
     const result = await testModelProviderConnection(provider.id)
     if (result.status === 'SUCCEEDED') {
-      successMessage.value = `${provider.displayName} test call succeeded in ${result.latencyMs} ms.`
+      successMessage.value = `${provider.displayName} 测试调用成功，用时 ${result.latencyMs} ms。`
     } else {
-      errorMessage.value = `${provider.displayName} test call failed: ${result.errorCode ?? 'UNKNOWN'}`
+      errorMessage.value = `${provider.displayName} 测试调用失败：${result.errorCode ?? 'UNKNOWN'}`
     }
   } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : 'Unable to test provider connection'
+    errorMessage.value = error instanceof Error ? error.message : '无法测试 Provider 连接'
   } finally {
     testingProviderId.value = ''
   }
@@ -252,28 +252,28 @@ async function testConnection(provider: ModelProviderSummary) {
 </script>
 
 <template>
-  <section class="workspace secondary-workspace" aria-label="Admin model providers" data-test="admin-model-providers">
+  <section class="workspace secondary-workspace" aria-label="管理员 Model Providers 配置" data-test="admin-model-providers">
     <header class="workspace-header secondary-page-header">
       <div>
-        <p class="eyebrow">Model Provider Registry</p>
-        <h2>Model Providers</h2>
+        <p class="eyebrow">Model Provider 注册表</p>
+        <h2>Model Providers 配置</h2>
         <p class="header-note">
-          Configure enabled providers, masked API keys, base URLs, models, priorities, and test calls while keeping secrets in the backend.
+          配置已启用的 Provider、脱敏 API key、Base URL、Model、优先级和测试调用，同时将密钥保留在后端。
         </p>
       </div>
       <button class="primary-action" type="button" :disabled="isLoading" @click="loadProviders">
         <RefreshCw :size="18" aria-hidden="true" />
-        {{ isLoading ? 'Refreshing providers' : 'Refresh providers' }}
+        {{ isLoading ? '正在刷新 Provider' : '刷新 Provider' }}
       </button>
     </header>
 
     <section class="provider-layout">
-      <aside class="provider-list-column" aria-label="Provider list">
+      <aside class="provider-list-column" aria-label="Provider 列表">
         <article class="panel provider-template-panel">
           <div class="panel-heading">
             <div>
-              <p class="eyebrow">Provider catalog</p>
-              <h3>Start from a provider</h3>
+              <p class="eyebrow">Provider 目录</p>
+              <h3>从 Provider 开始</h3>
             </div>
             <ServerCog :size="20" aria-hidden="true" />
           </div>
@@ -292,15 +292,15 @@ async function testConnection(provider: ModelProviderSummary) {
           </div>
           <button class="tool-button secondary" type="button" data-test="new-provider" @click="resetForm">
             <PlugZap :size="16" aria-hidden="true" />
-            New DeepSeek provider
+            新建 DeepSeek Provider
           </button>
         </article>
 
         <article class="panel triage-panel">
           <div class="panel-heading">
             <div>
-              <p class="eyebrow">Registered</p>
-              <h3>Saved providers</h3>
+              <p class="eyebrow">已注册</p>
+              <h3>已保存 Provider</h3>
             </div>
             <ShieldCheck :size="20" aria-hidden="true" />
           </div>
@@ -321,7 +321,7 @@ async function testConnection(provider: ModelProviderSummary) {
               </em>
             </li>
           </ul>
-          <p v-else class="answer-text">No providers yet. Create the first provider from a preset or custom endpoint.</p>
+          <p v-else class="answer-text">暂无 Provider。请从预设或 Custom endpoint 创建第一个 Provider。</p>
         </article>
       </aside>
 
@@ -329,8 +329,8 @@ async function testConnection(provider: ModelProviderSummary) {
         <article class="panel triage-panel provider-form-panel" data-test="provider-form">
           <div class="panel-heading">
             <div>
-              <p class="eyebrow">{{ isEditing ? 'Edit provider' : 'New provider' }}</p>
-              <h3>{{ form.displayName || 'Provider configuration' }}</h3>
+              <p class="eyebrow">{{ isEditing ? '编辑 Provider' : '新建 Provider' }}</p>
+              <h3>{{ form.displayName || 'Provider 配置' }}</h3>
             </div>
             <Activity :size="20" aria-hidden="true" />
           </div>
@@ -340,7 +340,7 @@ async function testConnection(provider: ModelProviderSummary) {
 
           <div class="form-grid provider-form-grid">
             <label>
-              Provider type
+              Provider 类型
               <select v-model="form.providerCode" :disabled="isEditing" @change="applyPreset(form.providerCode)">
                 <option value="deepseek">DeepSeek</option>
                 <option value="mimo">Xiaomi MiMo</option>
@@ -350,15 +350,15 @@ async function testConnection(provider: ModelProviderSummary) {
               </select>
             </label>
             <label>
-              Display name
-              <input v-model="form.displayName" type="text" placeholder="Provider display name" />
+              展示名称
+              <input v-model="form.displayName" type="text" placeholder="Provider 展示名称" />
             </label>
             <label>
-              Remark
-              <input v-model="form.remark" type="text" placeholder="Optional operations note" />
+              备注
+              <input v-model="form.remark" type="text" placeholder="可选运维备注" />
             </label>
             <label>
-              Website
+              官网
               <input v-model="form.websiteUrl" type="url" placeholder="https://..." />
             </label>
             <label class="wide-field">
@@ -374,40 +374,40 @@ async function testConnection(provider: ModelProviderSummary) {
               <input v-model="form.embeddingModel" type="text" placeholder="embedding model id" />
             </label>
             <label>
-              API key masked
+              API key 已脱敏
               <input
                 v-model="form.apiKey"
                 type="password"
-                :placeholder="selectedProvider?.apiKeyConfigured ? 'Leave blank to keep the current encrypted key' : 'Enter API key'"
+                :placeholder="selectedProvider?.apiKeyConfigured ? '留空则保留当前加密 key' : '输入 API key'"
               />
             </label>
             <label>
-              Budget
-              <input v-model="form.budget" type="text" placeholder="Backend controlled" />
+              预算
+              <input v-model="form.budget" type="text" placeholder="后端控制" />
             </label>
             <label>
-              Priority
+              优先级
               <select v-model="form.priority">
-                <option>High</option>
-                <option>Normal</option>
-                <option>Low</option>
-                <option>Paused</option>
+                <option>高</option>
+                <option>普通</option>
+                <option>低</option>
+                <option>暂停</option>
               </select>
             </label>
             <label class="checkbox-row">
               <input v-model="form.enabled" type="checkbox" />
-              Enabled
+              已启用
             </label>
             <label class="checkbox-row">
               <input v-model="form.defaultProvider" type="checkbox" />
-              Default provider
+              默认 Provider
             </label>
           </div>
 
           <div class="action-row">
             <button class="primary-action" type="button" :disabled="isSaving" data-test="save-provider" @click="saveProvider">
               <CheckCircle2 :size="16" aria-hidden="true" />
-              {{ isSaving ? 'Saving' : isEditing ? 'Update provider' : 'Create provider' }}
+              {{ isSaving ? '正在保存' : isEditing ? '更新 Provider' : '创建 Provider' }}
             </button>
             <button
               v-if="selectedProvider"
@@ -418,7 +418,7 @@ async function testConnection(provider: ModelProviderSummary) {
               @click="testConnection(selectedProvider)"
             >
               <Activity :size="16" aria-hidden="true" />
-              {{ testingProviderId === selectedProvider.id ? 'Testing call' : 'Test call' }}
+              {{ testingProviderId === selectedProvider.id ? '正在测试调用' : '测试调用' }}
             </button>
             <button
               v-if="selectedProvider && !selectedProvider.defaultProvider"
@@ -428,7 +428,7 @@ async function testConnection(provider: ModelProviderSummary) {
               @click="markDefault(selectedProvider)"
             >
               <Star :size="16" aria-hidden="true" />
-              Set default
+              设为默认
             </button>
           </div>
         </article>
@@ -436,8 +436,8 @@ async function testConnection(provider: ModelProviderSummary) {
         <article class="panel">
           <div class="panel-heading">
             <div>
-              <p class="eyebrow">Call chain / monitoring</p>
-              <h3>Provider runtime policy</h3>
+              <p class="eyebrow">调用链 / 监控</p>
+              <h3>Provider Runtime 策略</h3>
             </div>
             <GitBranch :size="20" aria-hidden="true" />
           </div>

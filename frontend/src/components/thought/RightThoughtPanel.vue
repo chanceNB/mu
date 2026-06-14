@@ -26,6 +26,11 @@ const props = withDefaults(
   },
 )
 
+const emit = defineEmits<{
+  (event: 'collapsed-change', value: boolean): void
+  (event: 'hidden-change', value: boolean): void
+}>()
+
 const fallback = createDefaultThoughtPanelData()
 const collapsed = ref(props.initiallyCollapsed)
 const hidden = ref(false)
@@ -38,16 +43,21 @@ const panelData = computed(() => ({
 }))
 
 function toggleCollapsed() {
-  collapsed.value = !collapsed.value
+  const nextCollapsed = !collapsed.value
+  collapsed.value = nextCollapsed
+  emit('collapsed-change', nextCollapsed)
 }
 
 function hidePanel() {
   hidden.value = true
+  emit('hidden-change', true)
 }
 
 function showPanel() {
   hidden.value = false
   collapsed.value = false
+  emit('hidden-change', false)
+  emit('collapsed-change', false)
 }
 </script>
 
@@ -58,31 +68,52 @@ function showPanel() {
     aria-label="AI 思考流"
     data-test="right-thought-panel"
   >
-    <header class="thought-panel-header">
-      <div class="title-lockup">
-        <span class="title-mark">
-          <Bot :size="18" aria-hidden="true" />
-        </span>
-        <div>
-          <p class="thought-eyebrow">Thought Stream</p>
-          <h2>AI 思考流</h2>
+    <header :class="['thought-panel-header', { collapsed }]">
+      <template v-if="!collapsed">
+        <div class="title-lockup">
+          <span class="title-mark">
+            <Bot :size="18" aria-hidden="true" />
+          </span>
+          <div>
+            <p class="thought-eyebrow">Thought Stream</p>
+            <h2>AI 思考流</h2>
+          </div>
         </div>
-      </div>
 
-      <div class="panel-actions">
+        <div class="panel-actions">
+          <button
+            type="button"
+            data-test="thought-panel-collapse"
+            aria-label="折叠 AI 思考流"
+            title="折叠"
+            @click="toggleCollapsed"
+          >
+            <ChevronLeft :size="16" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            data-test="thought-panel-hide"
+            aria-label="隐藏 AI 思考流"
+            title="隐藏"
+            @click="hidePanel"
+          >
+            <X :size="16" aria-hidden="true" />
+          </button>
+        </div>
+      </template>
+
+      <template v-else>
         <button
+          class="collapsed-expand-button"
           type="button"
-          :aria-label="collapsed ? '展开 AI 思考流' : '折叠 AI 思考流'"
-          :title="collapsed ? '展开' : '折叠'"
+          data-test="thought-panel-expand"
+          aria-label="展开 AI 思考流"
+          title="展开"
           @click="toggleCollapsed"
         >
-          <ChevronLeft v-if="!collapsed" :size="16" aria-hidden="true" />
-          <ChevronRight v-else :size="16" aria-hidden="true" />
+          <ChevronRight :size="16" aria-hidden="true" />
         </button>
-        <button type="button" aria-label="隐藏 AI 思考流" title="隐藏" @click="hidePanel">
-          <X :size="16" aria-hidden="true" />
-        </button>
-      </div>
+      </template>
     </header>
 
     <div v-if="!collapsed" class="thought-panel-scroll">
@@ -103,6 +134,7 @@ function showPanel() {
     v-else
     class="thought-panel-restore"
     type="button"
+    data-test="thought-panel-restore"
     aria-label="显示 AI 思考流"
     title="显示 AI 思考流"
     @click="showPanel"
@@ -139,6 +171,7 @@ function showPanel() {
 .right-thought-panel.collapsed {
   width: 88px;
   min-width: 88px;
+  overflow: hidden;
 }
 
 .thought-panel-header {
@@ -153,6 +186,12 @@ function showPanel() {
   background: rgba(248, 250, 252, 0.96);
   border-bottom: 1px solid #e5e7eb;
   backdrop-filter: blur(14px);
+}
+
+.thought-panel-header.collapsed {
+  justify-content: center;
+  padding: 14px 10px 8px;
+  border-bottom: 0;
 }
 
 .title-lockup {
@@ -194,6 +233,7 @@ h2 {
 }
 
 .panel-actions button,
+.collapsed-expand-button,
 .thought-panel-restore {
   display: inline-flex;
   align-items: center;
@@ -208,6 +248,7 @@ h2 {
 }
 
 .panel-actions button:hover,
+.collapsed-expand-button:hover,
 .thought-panel-restore:hover {
   color: #4f46e5;
   border-color: #c7d2fe;
@@ -224,19 +265,21 @@ h2 {
 }
 
 .collapsed-content {
-  display: grid;
-  align-content: start;
-  justify-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 12px;
-  padding: 16px 10px;
+  padding: 10px;
   color: #4f46e5;
-  writing-mode: vertical-rl;
 }
 
 .collapsed-content span {
   color: #111827;
   font-size: 13px;
   font-weight: 800;
+  line-height: 1.2;
+  text-orientation: mixed;
+  writing-mode: vertical-rl;
 }
 
 .collapsed-status {
@@ -248,6 +291,8 @@ h2 {
   text-transform: uppercase;
   background: #ede9fe;
   border-radius: 999px;
+  text-orientation: mixed;
+  writing-mode: vertical-rl;
 }
 
 .collapsed-status.done {
@@ -297,6 +342,11 @@ h2 {
   }
 
   .collapsed-content {
+    align-items: start;
+  }
+
+  .collapsed-content span,
+  .collapsed-status {
     writing-mode: horizontal-tb;
   }
 }

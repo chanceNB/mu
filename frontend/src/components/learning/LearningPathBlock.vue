@@ -7,7 +7,13 @@ defineProps<{
 }>()
 
 function displayStatus(status: PathNode['status']) {
-  return status === 'ACTIVE' ? 'CURRENT' : status
+  const statusLabels: Record<PathNode['status'], string> = {
+    READY: '就绪',
+    ACTIVE: '当前',
+    LOCKED: '锁定',
+    DONE: '已完成',
+  }
+  return statusLabels[status] ?? status
 }
 </script>
 
@@ -15,13 +21,13 @@ function displayStatus(status: PathNode['status']) {
   <article class="stream-block path-block" data-test="learning-path-block">
     <div class="block-heading">
       <div>
-        <p class="eyebrow">Learning Path</p>
+        <p class="eyebrow">学习路径</p>
         <h3>学习路径卡片</h3>
       </div>
       <Route :size="19" aria-hidden="true" />
     </div>
 
-    <div v-if="nodes.length" class="path-stepper" aria-label="Learning path">
+    <div v-if="nodes.length" class="path-stepper" aria-label="学习路径">
       <section
         v-for="node in nodes"
         :key="node.id"
@@ -36,7 +42,7 @@ function displayStatus(status: PathNode['status']) {
         </div>
         <p>{{ node.reason }}</p>
         <div class="mastery-row">
-          <span>mastery {{ node.mastery }}%</span>
+          <span>掌握度 {{ node.mastery }}%</span>
           <div class="mini-meter" aria-hidden="true">
             <i :style="{ width: `${node.mastery}%` }"></i>
           </div>

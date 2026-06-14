@@ -45,6 +45,7 @@ frontend/
 - For AI learning cockpit pages, keep Chinese user-facing labels while preserving English engineering aliases for API paths, traceId, chunkId, documentId, state enums, and compatibility tests.
 - Target-state controls that backend does not yet support must be disabled and documented, not wired to fake API calls.
 - Admin charts may use CSS placeholders until backend production observability APIs exist; do not fabricate metrics.
+- Student resource review status board uses `.resource-status-board` CSS overrides: max 2 columns, 1 column below 900px, normal word wrapping for resource titles, and `break-word` wrapping for citations/snippets.
 
 ## Open Issues
 

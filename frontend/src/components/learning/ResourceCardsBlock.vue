@@ -23,9 +23,24 @@ function resourceTypeLabel(type: string) {
 }
 
 function resourceMeta(resource: GeneratedResource) {
-  if (resource.type === 'EXERCISE') return '6 questions'
-  if (resource.type === 'CODE_LAB') return '1 lab'
-  return '8 min'
+  if (resource.type === 'EXERCISE') return '6 道题'
+  if (resource.type === 'CODE_LAB') return '1 个实验'
+  return '8 分钟'
+}
+
+function displayStatus(status: string) {
+  const statusLabels: Record<string, string> = {
+    DRAFT: '草稿',
+    PENDING: '待处理',
+    PENDING_CRITIC: '待审核',
+    APPROVED: '已通过',
+    REVISION_REQUESTED: '需修改',
+    SAFETY_BLOCKED: '安全拦截',
+    COMPLETED: '已完成',
+    PASS: '通过',
+    BLOCKED: '已拦截',
+  }
+  return statusLabels[status] ?? status
 }
 </script>
 
@@ -33,7 +48,7 @@ function resourceMeta(resource: GeneratedResource) {
   <article class="stream-block resource-block">
     <div class="block-heading">
       <div>
-        <p class="eyebrow">Generated Resources</p>
+        <p class="eyebrow">生成资源</p>
         <h3>生成资源卡片</h3>
       </div>
       <FileText :size="19" aria-hidden="true" />
@@ -42,11 +57,11 @@ function resourceMeta(resource: GeneratedResource) {
     <dl class="resource-task-summary" data-test="resource-task-summary">
       <div>
         <dt>任务</dt>
-        <dd>{{ taskStatus }}</dd>
+        <dd>{{ displayStatus(taskStatus) }}</dd>
       </div>
       <div>
         <dt>审核</dt>
-        <dd>{{ reviewStatus }}</dd>
+        <dd>{{ displayStatus(reviewStatus) }}</dd>
       </div>
       <div>
         <dt>进度</dt>
@@ -54,7 +69,7 @@ function resourceMeta(resource: GeneratedResource) {
       </div>
       <div>
         <dt>安全</dt>
-        <dd>{{ safetyStatus }}</dd>
+        <dd>{{ displayStatus(safetyStatus) }}</dd>
       </div>
     </dl>
 
@@ -69,14 +84,14 @@ function resourceMeta(resource: GeneratedResource) {
           <p>{{ resource.citationSummary || '等待引用摘要' }}</p>
           <div class="resource-meta">
             <span>{{ resourceMeta(resource) }}</span>
-            <span>{{ resource.reviewStatus }}</span>
-            <span>{{ resource.safetyStatus }}</span>
+            <span>{{ displayStatus(resource.reviewStatus) }}</span>
+            <span>{{ displayStatus(resource.safetyStatus) }}</span>
           </div>
         </div>
       </section>
     </div>
 
-    <p v-else class="empty-state">还没有生成资源。点击底部 composer 的“生成资源”后，这里会展示微课、练习题、知识总结和错题解析。</p>
+    <p v-else class="empty-state">还没有生成资源。点击底部输入区的“生成资源”后，这里会展示微课、练习题、知识总结和错题解析。</p>
   </article>
 </template>
 

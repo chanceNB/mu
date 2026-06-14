@@ -56,8 +56,9 @@ const KNOWLEDGE_BASE_DESCRIPTION = 'Student workbench course materials'
 const JOIN_NODE_ID = 'kp_sql_join'
 const JOIN_QUESTION_ID = 'q_sql_join_cardinality'
 const RESOURCE_TYPES = ['LECTURE', 'MIND_MAP', 'EXERCISE', 'READING', 'CODE_LAB']
+const REPLAN_NOT_CREATED = 'Not created'
 const PROFILE_PROMPT =
-  'I want to master Java backend project delivery. SQL JOIN diagnosis and cited RAG service are my weak points; I prefer code examples and project practice.'
+  '我想掌握 Java 后端项目交付。SQL JOIN 诊断和带 Citation 的 RAG 服务是我的薄弱点；我更喜欢代码示例和项目实践。'
 
 const state = ref<WorkbenchState>({
   knowledgeBase: {
@@ -68,17 +69,17 @@ const state = ref<WorkbenchState>({
   },
   learnerProfile: {
     learnerId: LEARNER_ID,
-    major: 'Software Engineering',
-    goal: 'Master Java backend project delivery',
-    preference: 'Code examples and project practice',
-    weakness: 'SQL JOIN diagnosis',
+    major: '软件工程',
+    goal: '掌握 Java 后端项目交付',
+    preference: '代码示例和项目实践',
+    weakness: 'SQL JOIN 诊断',
     dimensions: [
-      { name: 'professional_background', value: 'Software engineering sophomore', confidence: 0.82, evidence: 'Learner stated major and year.' },
-      { name: 'learning_goal', value: 'Java backend delivery', confidence: 0.88, evidence: 'Goal names Spring Boot APIs.' },
-      { name: 'knowledge_base', value: 'Controller basics known', confidence: 0.74, evidence: 'Prior API practice.' },
-      { name: 'knowledge_gap', value: 'SQL JOIN cardinality', confidence: 0.9, evidence: 'Repeated wrong answers.' },
-      { name: 'cognitive_style', value: 'Worked examples before abstraction', confidence: 0.7, evidence: 'Prefers code labs.' },
-      { name: 'resource_preference', value: 'Code labs and diagrams', confidence: 0.78, evidence: 'Explicit resource request.' },
+      { name: '专业背景', value: '软件工程大二学生', confidence: 0.82, evidence: '学习者说明了专业和年级。' },
+      { name: '学习目标', value: 'Java 后端交付', confidence: 0.88, evidence: '目标中提到 Spring Boot API。' },
+      { name: '知识基础', value: '已掌握 Controller 基础', confidence: 0.74, evidence: '已有 API 实践经验。' },
+      { name: '知识薄弱点', value: 'SQL JOIN 基数关系', confidence: 0.9, evidence: '多次答题错误。' },
+      { name: '认知风格', value: '先看样例再抽象', confidence: 0.7, evidence: '偏好代码实验。' },
+      { name: '资源偏好', value: '代码实验和图解', confidence: 0.78, evidence: '明确提出资源需求。' },
     ],
   },
   documents: [
@@ -101,24 +102,24 @@ const state = ref<WorkbenchState>({
       updatedAt: '2026-06-04 20:18',
     },
   ],
-  ragQuestion: 'Why does SQL JOIN duplicate rows?',
+  ragQuestion: '为什么 SQL JOIN 会产生重复行？',
   ragTraceId: 'trc_idle',
   sseStage: 'IDLE',
-  ragAnswer: 'Ask against kb_java_backend to retrieve grounded course guidance.',
+  ragAnswer: '向 kb_java_backend 提问，获取有依据的课程指导。',
   ragSources: [
     {
       documentName: 'database-course.md',
       pageNum: 12,
-      sectionTitle: 'Multi table joins',
-      excerpt: 'JOIN duplicates usually come from one-to-many relationships.',
+      sectionTitle: '多表 JOIN',
+      excerpt: 'JOIN 重复行通常来自一对多关系。',
       score: 0.87,
     },
   ],
   mastery: 42,
-  assessmentStatus: 'Waiting for answer',
+  assessmentStatus: '等待作答',
   assessmentAnswer:
-    'A JOIN duplicates parent rows when multiple child rows match; aggregate or constrain child rows before projecting.',
-  replanRecordId: 'Not created',
+    '当多条子表记录匹配同一条父表记录时，JOIN 会重复父表行；投影前应先聚合或约束子表行。',
+  replanRecordId: REPLAN_NOT_CREATED,
   profilePrompt: PROFILE_PROMPT,
   followUpQuestions: [],
   selectedFollowUpQuestion: '',
@@ -135,23 +136,23 @@ const state = ref<WorkbenchState>({
   pathNodes: [
     {
       id: 'kp_http_controller',
-      title: 'HTTP Controllers',
+      title: 'HTTP 控制器',
       status: 'READY',
-      reason: 'Controller basics are stable enough for API workflow practice.',
+      reason: 'Controller 基础已经较稳定，可以进入 API 工作流练习。',
       mastery: 76,
     },
     {
       id: JOIN_NODE_ID,
-      title: 'SQL JOIN Diagnosis',
+      title: 'SQL JOIN 诊断',
       status: 'ACTIVE',
-      reason: 'Weak point detected from profile extraction and prior answers.',
+      reason: '画像抽取和历史作答显示这里是薄弱点。',
       mastery: 42,
     },
     {
       id: 'kp_cited_rag_service',
-      title: 'Cited RAG Service',
+      title: '引用型 RAG 服务',
       status: 'LOCKED',
-      reason: 'Unlock after retrieval, citation grounding, and JOIN correction.',
+      reason: '完成检索、引用依据和 JOIN 纠错后解锁。',
       mastery: 18,
     },
   ],
@@ -160,24 +161,24 @@ const state = ref<WorkbenchState>({
       resourceId: 'res_local_001',
       type: 'LECTURE',
       modality: 'TEXT',
-      title: 'JOIN duplication walkthrough',
+      title: 'JOIN 重复行讲解',
       status: 'PENDING_CRITIC',
       reviewStatus: 'PENDING_CRITIC',
       reviewer: 'CriticAgent',
       citationSummary: 'database-course.md p.12',
-      markdownContent: 'Local draft resource body',
+      markdownContent: '本地草稿资源正文',
       safetyStatus: 'PENDING',
     },
     {
       resourceId: 'res_local_002',
       type: 'EXERCISE',
       modality: 'TEXT',
-      title: 'Fix a one-to-many query',
+      title: '修复一对多查询',
       status: 'PENDING_CRITIC',
       reviewStatus: 'PENDING_CRITIC',
       reviewer: 'CriticAgent',
       citationSummary: 'database-course.md p.14',
-      markdownContent: 'Local exercise draft body',
+      markdownContent: '本地练习草稿正文',
       safetyStatus: 'PENDING',
     },
   ],
@@ -229,14 +230,14 @@ const workflowSteps = computed(() => [
   { id: 'knowledge-bases', label: '知识库', complete: Boolean(state.value.knowledgeBase.id) },
   {
     id: 'documents',
-    label: '课程资料 Documents',
+    label: '课程资料',
     complete: documents.value.length > 0 && documents.value.every((document) => document.status !== 'PENDING'),
   },
   { id: 'rag-chat', label: 'RAG 问答', complete: state.value.sseStage === 'DONE' },
   { id: 'citations', label: '引用来源', complete: state.value.ragSources.length > 0 && state.value.ragTraceId !== 'trc_idle' },
   { id: 'learning-path', label: '学习路径', complete: pathNodes.value.length > 0 && Boolean(state.value.pathTraceId) },
   { id: 'resources', label: '生成资源', complete: state.value.resourceTaskId !== 'res_task_draft' && resources.value.length > 0 },
-  { id: 'assessment', label: '测评反馈', complete: state.value.replanRecordId !== 'Not created' },
+  { id: 'assessment', label: '测评反馈', complete: state.value.replanRecordId !== REPLAN_NOT_CREATED },
 ])
 
 const indexedDocuments = computed(
@@ -256,6 +257,7 @@ const averageMastery = computed(() => {
     pathNodes.value.reduce((sum, node) => sum + node.mastery, 0) / pathNodes.value.length
   return Math.round((nodeAverage + state.value.mastery) / 2)
 })
+const localizedErrorMessage = computed(() => displayErrorMessage(state.value.errorMessage))
 
 const usesSensitiveUrlSafeRagTransport = computed(
   () => import.meta.env.PROD || import.meta.env.MODE === 'staging',
@@ -333,7 +335,7 @@ function selectFollowUpQuestion(question: string) {
 async function refineProfile() {
   const message = state.value.profilePrompt.trim()
   if (!message) {
-    state.value.errorMessage = 'Enter learner context before updating profile.'
+    state.value.errorMessage = '更新画像前请输入学习者背景。'
     return
   }
 
@@ -358,12 +360,12 @@ async function uploadDocument() {
   try {
     const file = selectedDocumentFile.value
     if (!file) {
-      state.value.errorMessage = 'Select a document before upload.'
+      state.value.errorMessage = '上传前请先选择文档。'
       return
     }
     const activeNode = activePathNode()
     if (!activeNode) {
-      state.value.errorMessage = 'Learning path is empty; create a path before uploading documents.'
+      state.value.errorMessage = '学习路径为空，请先创建路径再上传文档。'
       return
     }
 
@@ -526,7 +528,7 @@ async function generateResources() {
   startAction('resources')
   const activeNode = activePathNode()
   if (!activeNode) {
-    state.value.errorMessage = 'Learning path is empty; create a path before generating resources.'
+    state.value.errorMessage = '学习路径为空，请先创建路径再生成资源。'
     finishAction('resources')
     return
   }
@@ -872,6 +874,42 @@ function captureError(actor: string, error: unknown) {
   })
 }
 
+function displayErrorMessage(message: string) {
+  const errorLabels: Record<string, string> = {
+    'Failed to fetch': '请求失败',
+    'Request failed': '请求失败',
+    'Invalid SSE event payload': 'SSE 事件数据无效',
+    'RAG stream failed': 'RAG 流式请求失败',
+  }
+  return errorLabels[message] ?? message
+}
+
+function displayStatus(status: string) {
+  const statusLabels: Record<string, string> = {
+    IDLE: '空闲',
+    RETRIEVING: '检索中',
+    DONE: '完成',
+    ERROR: '错误',
+    READY: '就绪',
+    ACTIVE: '当前',
+    LOCKED: '锁定',
+    DRAFT: '草稿',
+    PENDING: '待处理',
+    PENDING_CRITIC: '待审核',
+    APPROVED: '已通过',
+    REVISION_REQUESTED: '需修改',
+    OTHER_REVIEW_STATUS: '其他状态',
+    COMPLETED: '已完成',
+    PASS: '通过',
+    BLOCKED: '已拦截',
+  }
+  return statusLabels[status] ?? status
+}
+
+function displayReplanRecordId(replanRecordId: string) {
+  return replanRecordId === REPLAN_NOT_CREATED ? '未创建' : replanRecordId
+}
+
 function normalizeTraceStatus(status: string): TraceStep['status'] {
   if (status === 'DONE' || status === 'RUNNING' || status === 'PENDING' || status === 'WAITING') {
     return status
@@ -912,7 +950,7 @@ function asPercent(value: number): number {
         :mastery="state.mastery"
         :assessment-status="state.assessmentStatus"
         :replan-record-id="state.replanRecordId"
-        :error-message="state.errorMessage"
+        :error-message="localizedErrorMessage"
       />
       <WorkspaceComposer
         v-model:question="state.ragQuestion"
@@ -945,7 +983,7 @@ function asPercent(value: number): number {
         @click="askRag"
       >
         <Search :size="18" aria-hidden="true" />
-        <span class="desktop-label">{{ state.loadingAction === 'rag' ? 'RAG 检索中 / Running RAG' : '发送问题 / Run RAG Chat' }}</span>
+        <span class="desktop-label">{{ state.loadingAction === 'rag' ? 'RAG 检索中' : '发送问题' }}</span>
         <span class="mobile-label">{{ state.loadingAction === 'rag' ? 'RAG 检索中' : '发送问题' }}</span>
       </button>
     </header>
@@ -971,8 +1009,8 @@ function asPercent(value: number): number {
       </article>
       <article>
         <span>今日进度</span>
-        <strong>{{ state.sseStage }}</strong>
-        <p>SSE stage: status / token / done events</p>
+        <strong>{{ displayStatus(state.sseStage) }}</strong>
+        <p>SSE 阶段：状态 / token / 完成事件</p>
       </article>
       <article>
         <span>当前主题</span>
@@ -981,18 +1019,18 @@ function asPercent(value: number): number {
       </article>
       <article>
         <span>重规划记录</span>
-        <strong>{{ state.replanRecordId }}</strong>
-        <p>assessment-triggered path update</p>
+        <strong>{{ displayReplanRecordId(state.replanRecordId) }}</strong>
+        <p>测评触发的路径更新</p>
       </article>
       <article>
-        <span>课程资料 Documents</span>
+        <span>课程资料</span>
         <strong>{{ indexedDocuments }} / {{ pendingDocuments }}</strong>
-        <p>indexed / pending async index tasks</p>
+        <p>已索引 / 待处理异步索引任务</p>
       </article>
       <article>
         <span>平均掌握度</span>
         <strong>{{ averageMastery }}%</strong>
-        <p>path and assessment aggregate</p>
+        <p>路径和测评综合结果</p>
       </article>
     </section>
 
@@ -1018,18 +1056,18 @@ function asPercent(value: number): number {
           <p class="answer-text ai-answer">{{ state.ragAnswer }}</p>
           <div class="stage-line">
             <Bot :size="16" aria-hidden="true" />
-            <span>流式阶段 SSE stage</span>
-            <strong>{{ state.sseStage }}</strong>
+            <span>流式阶段</span>
+            <strong>{{ displayStatus(state.sseStage) }}</strong>
           </div>
           <div class="trace-chip">
-            traceId <strong>{{ state.ragTraceId }}</strong>
+            追踪 ID <strong>{{ state.ragTraceId }}</strong>
           </div>
           <div class="no-source-card" data-test="no-source-card">
             <AlertTriangle :size="18" aria-hidden="true" />
             <div>
               <strong>无可靠来源，系统暂不回答</strong>
               <p>未检索到足够可靠的课程来源时，系统拒绝编造答案。你可以换一种问法，或请教师补充课程资料。</p>
-              <span>no source / traceId: trace_xyz789 / 最低相似度阈值 0.70</span>
+              <span>无来源 / 追踪 ID: trace_xyz789 / 最低相似度阈值 0.70</span>
             </div>
           </div>
         </article>
@@ -1045,7 +1083,7 @@ function asPercent(value: number): number {
           <ol class="citation-list">
             <li v-for="source in state.ragSources" :key="`${source.documentName}-${source.pageNum}`">
               <strong>{{ source.documentName }}</strong>
-              <span>页码 p.{{ source.pageNum }} / {{ source.sectionTitle }} / score {{ source.score }}</span>
+              <span>页码 p.{{ source.pageNum }} / {{ source.sectionTitle }} / 分数 {{ source.score }}</span>
               <p>{{ source.excerpt }}</p>
               <small>documentId: doc_001 / chunkId: chunk_001</small>
             </li>
@@ -1060,7 +1098,7 @@ function asPercent(value: number): number {
         <article class="panel path-panel">
           <div class="panel-heading">
             <div>
-              <p class="eyebrow">学习路径节点 / Learning Path</p>
+              <p class="eyebrow">学习路径节点</p>
               <h3>可追踪下一步</h3>
             </div>
             <Route :size="20" aria-hidden="true" />
@@ -1069,10 +1107,10 @@ function asPercent(value: number): number {
             <section v-for="node in pathNodes" :key="node.title" class="path-node">
               <div>
                 <strong>{{ node.title }}</strong>
-                <em :class="['status-pill', node.status.toLowerCase()]">{{ node.status }}</em>
+                <em :class="['status-pill', node.status.toLowerCase()]">{{ displayStatus(node.status) }}</em>
               </div>
               <p>{{ node.reason }}</p>
-              <div class="mini-meter" :aria-label="`${node.title} mastery`">
+              <div class="mini-meter" :aria-label="`${node.title} 掌握度`">
                 <span :style="{ width: `${node.mastery}%` }"></span>
               </div>
             </section>
@@ -1084,7 +1122,7 @@ function asPercent(value: number): number {
       <article class="panel profile-panel">
         <div class="panel-heading">
           <div>
-            <p class="eyebrow">当前画像 / Learning Profile</p>
+            <p class="eyebrow">当前画像</p>
             <h3>{{ state.learnerProfile.learnerId }}</h3>
           </div>
           <UserRound :size="20" aria-hidden="true" />
@@ -1144,7 +1182,7 @@ function asPercent(value: number): number {
       <article class="panel kb-panel">
         <div class="panel-heading">
           <div>
-            <p class="eyebrow">知识库 / Knowledge Bases</p>
+            <p class="eyebrow">知识库</p>
             <h3>{{ state.knowledgeBase.name }}</h3>
           </div>
           <Database :size="20" aria-hidden="true" />
@@ -1163,8 +1201,8 @@ function asPercent(value: number): number {
           <UploadCloud :size="17" aria-hidden="true" />
           上传课程资料
         </button>
-        <p v-if="state.errorMessage" class="error-text" role="status">{{ state.errorMessage }}</p>
-        <ul class="document-list" aria-label="Documents">
+        <p v-if="state.errorMessage" class="error-text" role="status">{{ localizedErrorMessage }}</p>
+        <ul class="document-list" aria-label="课程资料">
           <li v-for="document in documents" :key="document.id">
             <FileUp :size="16" aria-hidden="true" />
             <div>
@@ -1179,7 +1217,7 @@ function asPercent(value: number): number {
       <article class="panel resource-panel">
         <div class="panel-heading">
           <div>
-            <p class="eyebrow">生成资源状态 / Generated Resources</p>
+            <p class="eyebrow">生成资源状态</p>
             <h3>审核闸口资源架</h3>
           </div>
           <FileText :size="20" aria-hidden="true" />
@@ -1217,16 +1255,16 @@ function asPercent(value: number): number {
           {{ state.loadingAction === 'resource-status' ? '检查审核状态中' : '查看状态' }}
         </button>
         <div class="trace-chip">
-          Resource traceId <strong>{{ state.resourceTraceId }}</strong>
+          资源追踪 ID <strong>{{ state.resourceTraceId }}</strong>
         </div>
         <dl class="resource-task-summary" data-test="resource-task-summary">
           <div>
             <dt>任务状态</dt>
-            <dd>{{ state.resourceTaskStatus }}</dd>
+            <dd>{{ displayStatus(state.resourceTaskStatus) }}</dd>
           </div>
           <div>
             <dt>审核状态</dt>
-            <dd>{{ state.resourceReviewStatus }}</dd>
+            <dd>{{ displayStatus(state.resourceReviewStatus) }}</dd>
           </div>
           <div>
             <dt>进度</dt>
@@ -1234,14 +1272,14 @@ function asPercent(value: number): number {
           </div>
           <div>
             <dt>安全</dt>
-            <dd>{{ state.resourceSafetyStatus }}</dd>
+            <dd>{{ displayStatus(state.resourceSafetyStatus) }}</dd>
           </div>
         </dl>
 
         <div class="status-board resource-status-board" aria-label="Resource review status board">
           <section class="resource-shelf approved" data-test="resource-shelf-approved">
             <div class="resource-shelf-heading">
-              <strong>已批准 approved</strong>
+              <strong>已批准</strong>
               <span>{{ approvedResources.length }}</span>
             </div>
             <ul class="resource-list compact">
@@ -1249,9 +1287,9 @@ function asPercent(value: number): number {
                 <div class="resource-title-row">
                   <strong>{{ resource.type }}</strong>
                   <span>{{ resource.title }}</span>
-                  <em :class="['status-pill', resource.status.toLowerCase()]">{{ resource.reviewStatus }}</em>
+                  <em :class="['status-pill', resource.status.toLowerCase()]">{{ displayStatus(resource.reviewStatus) }}</em>
                 </div>
-                <small>{{ resource.resourceId }} / {{ resource.modality }} / {{ resource.safetyStatus }}</small>
+                <small>{{ resource.resourceId }} / {{ resource.modality }} / {{ displayStatus(resource.safetyStatus) }}</small>
                 <p>{{ resource.citationSummary }}</p>
                 <blockquote>{{ resource.markdownContent }}</blockquote>
               </li>
@@ -1261,7 +1299,7 @@ function asPercent(value: number): number {
 
           <section class="resource-shelf pending" data-test="resource-shelf-pending">
             <div class="resource-shelf-heading">
-              <strong>待教师审核 pending review</strong>
+              <strong>待教师审核</strong>
               <span>{{ pendingReviewResources.length }}</span>
             </div>
             <ul class="resource-list compact">
@@ -1269,9 +1307,9 @@ function asPercent(value: number): number {
                 <div class="resource-title-row">
                   <strong>{{ resource.type }}</strong>
                   <span>{{ resource.title }}</span>
-                  <em :class="['status-pill', resource.status.toLowerCase()]">{{ resource.reviewStatus }}</em>
+                  <em :class="['status-pill', resource.status.toLowerCase()]">{{ displayStatus(resource.reviewStatus) }}</em>
                 </div>
-                <small>{{ resource.resourceId }} / {{ resource.modality }} / {{ resource.safetyStatus }}</small>
+                <small>{{ resource.resourceId }} / {{ resource.modality }} / {{ displayStatus(resource.safetyStatus) }}</small>
                 <p>{{ resource.citationSummary }}</p>
                 <blockquote>{{ resource.markdownContent }}</blockquote>
               </li>
@@ -1281,7 +1319,7 @@ function asPercent(value: number): number {
 
           <section class="resource-shelf revision" data-test="resource-shelf-revision">
             <div class="resource-shelf-heading">
-              <strong>退回修改 returned</strong>
+              <strong>退回修改</strong>
               <span>{{ revisionResources.length }}</span>
             </div>
             <ul class="resource-list compact">
@@ -1289,9 +1327,9 @@ function asPercent(value: number): number {
                 <div class="resource-title-row">
                   <strong>{{ resource.type }}</strong>
                   <span>{{ resource.title }}</span>
-                  <em :class="['status-pill', resource.status.toLowerCase()]">{{ resource.reviewStatus }}</em>
+                  <em :class="['status-pill', resource.status.toLowerCase()]">{{ displayStatus(resource.reviewStatus) }}</em>
                 </div>
-                <small>{{ resource.resourceId }} / {{ resource.modality }} / {{ resource.safetyStatus }}</small>
+                <small>{{ resource.resourceId }} / {{ resource.modality }} / {{ displayStatus(resource.safetyStatus) }}</small>
                 <p>{{ resource.citationSummary }}</p>
                 <blockquote>{{ resource.markdownContent }}</blockquote>
               </li>
@@ -1309,9 +1347,9 @@ function asPercent(value: number): number {
                 <div class="resource-title-row">
                   <strong>{{ resource.type }}</strong>
                   <span>{{ resource.title }}</span>
-                  <em :class="['status-pill', resource.status.toLowerCase()]">{{ resource.reviewStatus }}</em>
+                  <em :class="['status-pill', resource.status.toLowerCase()]">{{ displayStatus(resource.reviewStatus) }}</em>
                 </div>
-                <small>{{ resource.resourceId }} / {{ resource.modality }} / {{ resource.safetyStatus }}</small>
+                <small>{{ resource.resourceId }} / {{ resource.modality }} / {{ displayStatus(resource.safetyStatus) }}</small>
                 <p>{{ resource.citationSummary }}</p>
                 <blockquote>{{ resource.markdownContent }}</blockquote>
               </li>
@@ -1350,15 +1388,15 @@ function asPercent(value: number): number {
         <p class="answer-text">{{ state.assessmentStatus }}</p>
         <div>
           <div class="meter-heading">
-            <span>掌握度 Mastery</span>
+            <span>掌握度</span>
             <strong>{{ state.mastery }}%</strong>
           </div>
-          <div class="mastery-meter" aria-label="Mastery">
+          <div class="mastery-meter" aria-label="掌握度">
             <span :style="{ width: `${state.mastery}%` }"></span>
           </div>
         </div>
         <div class="trace-chip">
-          重规划 Replan <strong>{{ state.replanRecordId }}</strong>
+          重规划 <strong>{{ displayReplanRecordId(state.replanRecordId) }}</strong>
         </div>
       </article>
 
@@ -1427,12 +1465,12 @@ function asPercent(value: number): number {
             <ListChecks :size="20" aria-hidden="true" />
           </div>
           <div class="state-token-grid">
-            <span class="state-token loading">loading 骨架屏</span>
-            <span class="state-token failed">failed 重试</span>
-            <span class="state-token empty">empty 空状态</span>
-            <span class="state-token pending">pending review 待教师审核</span>
-            <span class="state-token no-source">no source 拒答</span>
-            <span class="state-token approved">approved 已批准</span>
+            <span class="state-token loading">加载中 骨架屏</span>
+            <span class="state-token failed">失败 重试</span>
+            <span class="state-token empty">空状态</span>
+            <span class="state-token pending">待审核</span>
+            <span class="state-token no-source">无来源 拒答</span>
+            <span class="state-token approved">已批准</span>
           </div>
         </article>
       </div>

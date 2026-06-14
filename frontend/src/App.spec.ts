@@ -184,9 +184,9 @@ describe('AI Learning OS workbench', () => {
     expect(wrapper.get('[data-test="student-support-workspace"]').text()).toContain('当前画像')
     expect(wrapper.get('[data-test="student-support-workspace"]').text()).toContain('待教师审核')
     expect(wrapper.get('[data-test="student-diagnostics"]').text()).toContain('Agent Trace')
-    expect(wrapper.get('[data-test="status-showcase"]').text()).toContain('loading')
-    expect(wrapper.get('[data-test="status-showcase"]').text()).toContain('failed')
-    expect(wrapper.get('[data-test="status-showcase"]').text()).toContain('no source')
+    expect(wrapper.get('[data-test="status-showcase"]').text()).toContain('加载中')
+    expect(wrapper.get('[data-test="status-showcase"]').text()).toContain('失败')
+    expect(wrapper.get('[data-test="status-showcase"]').text()).toContain('无来源')
   })
 
   it('uses role-aware shell context and triage-oriented role pages', async () => {
@@ -244,20 +244,20 @@ describe('AI Learning OS workbench', () => {
 
     await wrapper.get('[data-test="teacher-view"]').trigger('click')
     await flushPromises()
-    expect(wrapper.text()).toContain('Teacher Review Queue')
-    expect(wrapper.text()).toContain('Selected decision')
-    expect(wrapper.text()).toContain('No pending resources')
+    expect(wrapper.text()).toContain('教师审核队列')
+    expect(wrapper.text()).toContain('当前决策')
+    expect(wrapper.text()).toContain('暂无待审核资源')
 
     await wrapper.get('[data-test="admin-view"]').trigger('click')
     await flushPromises()
-    expect(wrapper.text()).toContain('Admin Operations')
-    expect(wrapper.text()).toContain('Runtime health')
-    expect(wrapper.text()).toContain('Dependency health')
+    expect(wrapper.text()).toContain('管理员运维')
+    expect(wrapper.text()).toContain('Runtime 健康')
+    expect(wrapper.text()).toContain('依赖健康')
 
     await wrapper.get('[data-test="student-view"]').trigger('click')
     await flushPromises()
     expect(wrapper.text()).toContain('Student Learning Loop')
-    expect(wrapper.text()).toContain('Generated Resources')
+    expect(wrapper.text()).toContain('生成资源')
   })
 
   it('loads existing knowledge-base documents from backend instead of static examples', async () => {
@@ -275,7 +275,7 @@ describe('AI Learning OS workbench', () => {
       'http://localhost:8080/api/knowledge-bases/kb_java_backend/documents',
       expect.objectContaining({ method: 'GET' }),
     )
-    const documentListText = wrapper.get('ul[aria-label="Documents"]').text()
+    const documentListText = wrapper.get('ul[aria-label="课程资料"]').text()
     expect(documentListText).toContain('backend-existing-notes.md')
     expect(documentListText).toContain('backend-pending-lab.pdf')
     expect(documentListText).not.toContain('database-course.md')
@@ -294,7 +294,7 @@ describe('AI Learning OS workbench', () => {
     await flushPromises()
 
     const documentsStep = wrapper.get('[data-test="workflow-documents"]')
-    expect(documentsStep.text()).toContain('Documents')
+    expect(documentsStep.text()).toContain('课程资料')
     expect(documentsStep.find('svg').exists()).toBe(false)
   })
 
@@ -504,13 +504,13 @@ describe('AI Learning OS workbench', () => {
       'http://localhost:8080/api/analytics/overview',
       expect.objectContaining({ method: 'GET' }),
     )
-    expect(wrapper.text()).toContain('Runtime health')
+    expect(wrapper.text()).toContain('Runtime 健康')
     expect(wrapper.text()).toContain('application is running')
     expect(wrapper.text()).toContain('jdbc:h2:mem:health_test')
     expect(wrapper.text()).toContain('UNCONFIGURED')
-    expect(wrapper.text()).toContain('Agent tasks')
+    expect(wrapper.text()).toContain('Agent 任务')
     expect(wrapper.text()).toContain('18')
-    expect(wrapper.text()).toContain('Token usage')
+    expect(wrapper.text()).toContain('Token 用量')
     expect(wrapper.text()).toContain('200')
     expect(wrapper.text()).not.toContain('$0.42')
   })
@@ -522,12 +522,12 @@ describe('AI Learning OS workbench', () => {
     const wrapper = await mountApp('/admin/operations')
     await flushPromises()
 
-    expect(wrapper.text()).toContain('Available signals')
-    expect(wrapper.text()).toContain('Dependency health')
-    expect(wrapper.text()).toContain('Token activity')
-    expect(wrapper.text()).toContain('Review backlog')
-    expect(wrapper.text()).toContain('Learning activity')
-    expect(wrapper.text()).toContain('Analytics overview count')
+    expect(wrapper.text()).toContain('可用信号')
+    expect(wrapper.text()).toContain('依赖健康')
+    expect(wrapper.text()).toContain('Token 活动')
+    expect(wrapper.text()).toContain('审核积压')
+    expect(wrapper.text()).toContain('学习活动')
+    expect(wrapper.text()).toContain('分析概览计数')
     expect(wrapper.text()).not.toContain('model cost')
     expect(wrapper.text()).not.toContain('trace coverage')
     expect(wrapper.text()).not.toContain('citation rate')
@@ -604,7 +604,7 @@ describe('AI Learning OS workbench', () => {
         body: JSON.stringify({
           learnerId: 'stu_001',
           message:
-            'I want to master Java backend project delivery. SQL JOIN diagnosis and cited RAG service are my weak points; I prefer code examples and project practice.',
+            '我想掌握 Java 后端项目交付。SQL JOIN 诊断和带 Citation 的 RAG 服务是我的薄弱点；我更喜欢代码示例和项目实践。',
         }),
       }),
     )
@@ -822,7 +822,7 @@ describe('AI Learning OS workbench', () => {
     const wrapper = await mountApp()
     await flushPromises()
 
-    const documentListText = wrapper.get('ul[aria-label="Documents"]').text()
+    const documentListText = wrapper.get('ul[aria-label="课程资料"]').text()
     expect(documentListText).toContain('broken-course.pdf')
     expect(documentListText).toContain('FAILED')
     expect(documentListText).not.toContain('READY')
@@ -848,7 +848,7 @@ describe('AI Learning OS workbench', () => {
         init?.method === 'POST',
       ),
     ).toBe(false)
-    expect(wrapper.text()).toContain('Select a document before upload.')
+    expect(wrapper.text()).toContain('上传前请先选择文档。')
   })
 
   it('initializes the student knowledge base from backend APIs before upload', async () => {
@@ -936,12 +936,12 @@ describe('AI Learning OS workbench', () => {
     const stream = MockEventSource.instances[0]
     expect(stream.url).toContain('http://localhost:8080/api/chat/sessions/')
     expect(stream.url).toContain('/stream?')
-    expect(stream.url).toContain('question=Why+does+SQL+JOIN+duplicate+rows%3F')
+    expect(stream.url).toContain('question=%E4%B8%BA%E4%BB%80%E4%B9%88+SQL+JOIN+%E4%BC%9A%E4%BA%A7%E7%94%9F%E9%87%8D%E5%A4%8D%E8%A1%8C%EF%BC%9F')
     expect(stream.url).toContain('kbIds=kb_java_backend')
 
     stream.emit('status', { stage: 'RETRIEVING' })
     await flushPromises()
-    expect(wrapper.text()).toContain('RETRIEVING')
+    expect(wrapper.text()).toContain('检索中')
 
     stream.emit('token', { text: 'Streamed SQL JOIN answer from SSE.' })
     await flushPromises()
@@ -1023,7 +1023,7 @@ describe('AI Learning OS workbench', () => {
         headers: expect.any(Headers),
         body: JSON.stringify({
           kbIds: ['kb_java_backend'],
-          question: 'Why does SQL JOIN duplicate rows?',
+          question: '为什么 SQL JOIN 会产生重复行？',
           topK: 5,
         }),
       }),
@@ -1102,7 +1102,7 @@ describe('AI Learning OS workbench', () => {
         method: 'POST',
         body: JSON.stringify({
           kbIds: ['kb_java_backend'],
-          question: 'Why does SQL JOIN duplicate rows?',
+          question: '为什么 SQL JOIN 会产生重复行？',
           topK: 5,
         }),
       }),
@@ -1132,8 +1132,8 @@ describe('AI Learning OS workbench', () => {
     await flushPromises()
 
     expect(stream.close).toHaveBeenCalled()
-    expect(wrapper.text()).toContain('Invalid SSE event payload')
-    expect(wrapper.get('[data-test="ask-rag"]').text()).toContain('Run RAG Chat')
+    expect(wrapper.text()).toContain('SSE 事件数据无效')
+    expect(wrapper.get('[data-test="ask-rag"]').text()).toContain('发送')
   })
 
   it('uses the learner-edited RAG question for backend retrieval', async () => {
@@ -1273,7 +1273,7 @@ describe('AI Learning OS workbench', () => {
         method: 'POST',
         body: JSON.stringify({
           kbIds: ['kb_java_backend'],
-          question: 'Why does SQL JOIN duplicate rows?',
+          question: '为什么 SQL JOIN 会产生重复行？',
           topK: 5,
         }),
       }),
@@ -1302,7 +1302,7 @@ describe('AI Learning OS workbench', () => {
     expect(wrapper.text()).toContain('TEXT')
     expect(wrapper.text()).toContain('database-course.md p.12')
     expect(wrapper.text()).toContain('Generated resource body')
-    expect(wrapper.text()).toContain('PASS')
+    expect(wrapper.text()).toContain('通过')
     expect(wrapper.text()).toContain('ResourceAgent')
 
     await wrapper.get('[data-test="submit-assessment"]').trigger('click')
@@ -1314,7 +1314,7 @@ describe('AI Learning OS workbench', () => {
         body: JSON.stringify({
           learnerId: 'stu_001',
           questionId: 'q_sql_join_cardinality',
-          answer: 'A JOIN duplicates parent rows when multiple child rows match; aggregate or constrain child rows before projecting.',
+          answer: '当多条子表记录匹配同一条父表记录时，JOIN 会重复父表行；投影前应先聚合或约束子表行。',
         }),
       }),
     )
@@ -1424,10 +1424,10 @@ describe('AI Learning OS workbench', () => {
     await wrapper.get('[data-test="generate-resources"]').trigger('click')
     await flushPromises()
 
-    expect(wrapper.get('[data-test="resource-task-summary"]').text()).toContain('COMPLETED')
-    expect(wrapper.get('[data-test="resource-task-summary"]').text()).toContain('PENDING_CRITIC')
+    expect(wrapper.get('[data-test="resource-task-summary"]').text()).toContain('已完成')
+    expect(wrapper.get('[data-test="resource-task-summary"]').text()).toContain('待审核')
     expect(wrapper.get('[data-test="resource-task-summary"]').text()).toContain('100%')
-    expect(wrapper.get('[data-test="resource-task-summary"]').text()).toContain('PASS')
+    expect(wrapper.get('[data-test="resource-task-summary"]').text()).toContain('通过')
     expect(wrapper.get('[data-test="resource-shelf-pending"]').text()).toContain('Pending review lecture')
     expect(wrapper.get('[data-test="resource-shelf-approved"]').text()).toContain('Approved drill')
     expect(wrapper.get('[data-test="resource-shelf-revision"]').text()).toContain('Revision reading')
@@ -1528,7 +1528,7 @@ describe('AI Learning OS workbench', () => {
         String(url).includes('/api/resources/generation-tasks'),
       ),
     ).toBe(false)
-    expect(wrapper.text()).toContain('Learning path is empty; create a path before generating resources.')
+    expect(wrapper.text()).toContain('学习路径为空，请先创建路径再生成资源。')
   })
 
   it('uses the learner-edited assessment answer for grading', async () => {

@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- Student resource review status board layout:
+  - Fixed resource titles wrapping one character per line by scoping title wrapping to normal word breaks inside `.resource-status-board`.
+  - Changed the board to a maximum of 2 columns, with a 1-column layout below 900px.
+  - Kept `status-pill` labels from squeezing titles while preserving citation wrapping.
+  - Verification: `cd frontend && pnpm build` passed.
+
 - Epic 后续增强（F1–F7）全部落地：
   - Admin 前端 `/admin/model-providers` 供应商配置页；Embedding registry 路由；Token 预算调用前门禁；Ops 告警持久化 + webhook opt-in + Admin 真实告警区；Qdrant health/dimension probe；PDF parser layout 元数据增强；权限矩阵回归测试；external-smoke opt-in 测试。
   - 迁移 V22 `ops_alert_record`；配置项 `learning-os.token-budget` / `learning-os.ops-alert` / `rag.vector.qdrant.expected-dimension`。

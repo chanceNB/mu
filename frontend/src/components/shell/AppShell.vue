@@ -1,17 +1,33 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import LeftSidebar from './LeftSidebar.vue'
 import RightThoughtPanel from '../thought/RightThoughtPanel.vue'
+
+const thoughtPanelCollapsed = ref(false)
+const thoughtPanelHidden = ref(false)
 </script>
 
 <template>
-  <div class="app-shell" data-test="app-shell">
+  <div
+    :class="[
+      'app-shell',
+      {
+        'right-panel-collapsed': thoughtPanelCollapsed,
+        'right-panel-hidden': thoughtPanelHidden,
+      },
+    ]"
+    data-test="app-shell"
+  >
     <LeftSidebar />
 
     <main class="workbench-main" aria-label="AI learning workbench">
       <slot />
     </main>
 
-    <RightThoughtPanel />
+    <RightThoughtPanel
+      @collapsed-change="thoughtPanelCollapsed = $event"
+      @hidden-change="thoughtPanelHidden = $event"
+    />
   </div>
 </template>
 
@@ -25,6 +41,14 @@ import RightThoughtPanel from '../thought/RightThoughtPanel.vue'
   overflow: hidden;
   color: var(--color-text);
   background: var(--color-bg);
+}
+
+.app-shell.right-panel-collapsed {
+  grid-template-columns: var(--shell-sidebar-width) minmax(0, 1fr) 88px;
+}
+
+.app-shell.right-panel-hidden {
+  grid-template-columns: var(--shell-sidebar-width) minmax(0, 1fr);
 }
 
 .workbench-main {
@@ -58,8 +82,8 @@ import RightThoughtPanel from '../thought/RightThoughtPanel.vue'
 }
 
 :deep(.right-thought-panel.collapsed) {
-  width: 88px;
-  min-width: 88px;
+  width: 100%;
+  min-width: 0;
 }
 
 @media (max-width: 1100px) {

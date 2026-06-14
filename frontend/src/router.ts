@@ -9,25 +9,25 @@ export const routes = [
     path: '/',
     name: 'student',
     component: StudentDashboard,
-    meta: { label: 'Student Learning Loop' },
+    meta: { label: '学生学习闭环' },
   },
   {
     path: '/teacher/reviews',
     name: 'teacher',
     component: TeacherReviewQueue,
-    meta: { label: 'Teacher Review Queue' },
+    meta: { label: '教师审核队列' },
   },
   {
     path: '/admin/operations',
     name: 'admin',
     component: AdminOperations,
-    meta: { label: 'Admin Operations' },
+    meta: { label: '管理员运维' },
   },
   {
     path: '/admin/model-providers',
     name: 'admin-model-providers',
     component: AdminModelProviders,
-    meta: { label: 'Model Providers' },
+    meta: { label: 'Model Providers 配置' },
   },
 ] as const
 
@@ -37,4 +37,3 @@ export function createAppRouter(history: RouterHistory = createWebHistory()) {
     routes: [...routes],
   })
 }
-
