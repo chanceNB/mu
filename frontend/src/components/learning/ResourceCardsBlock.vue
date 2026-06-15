@@ -11,11 +11,11 @@ defineProps<{
 }>()
 
 const typeLabels: Record<string, string> = {
-  LECTURE: '微课视频',
+  LECTURE: '微课',
   EXERCISE: '练习题',
-  READING: '知识总结',
-  MIND_MAP: '知识总结',
-  CODE_LAB: '错题解析',
+  READING: '阅读材料',
+  MIND_MAP: '思维导图',
+  CODE_LAB: '代码实验',
 }
 
 function resourceTypeLabel(type: string) {
@@ -23,9 +23,9 @@ function resourceTypeLabel(type: string) {
 }
 
 function resourceMeta(resource: GeneratedResource) {
-  if (resource.type === 'EXERCISE') return '6 道题'
-  if (resource.type === 'CODE_LAB') return '1 个实验'
-  return '8 分钟'
+  if (resource.type === 'EXERCISE') return '练习'
+  if (resource.type === 'CODE_LAB') return '实验'
+  return resource.modality || '资源'
 }
 
 function displayStatus(status: string) {
@@ -38,7 +38,7 @@ function displayStatus(status: string) {
     SAFETY_BLOCKED: '安全拦截',
     COMPLETED: '已完成',
     PASS: '通过',
-    BLOCKED: '已拦截',
+    BLOCKED: '已阻塞',
   }
   return statusLabels[status] ?? status
 }
@@ -91,7 +91,7 @@ function displayStatus(status: string) {
       </section>
     </div>
 
-    <p v-else class="empty-state">??????</p>
+    <p v-else class="empty-state">暂无生成资源</p>
   </article>
 </template>
 

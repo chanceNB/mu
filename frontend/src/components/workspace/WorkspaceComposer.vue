@@ -36,7 +36,7 @@ function toggleResourceType(type: string, selectedTypes: string[], emit: (event:
         :value="question"
         data-test="rag-question-input"
         rows="2"
-        placeholder="Input question"
+        placeholder="输入问题"
         @input="$emit('update:question', ($event.target as HTMLTextAreaElement).value)"
       ></textarea>
 
@@ -87,8 +87,8 @@ function toggleResourceType(type: string, selectedTypes: string[], emit: (event:
           type="button"
           data-test="ask-rag"
           :disabled="loadingAction === 'rag'"
-          @click="$emit('send')"
           aria-label="发送问题"
+          @click="$emit('send')"
         >
           <Send :size="17" aria-hidden="true" />
           <span class="sr-only">运行 RAG 问答</span>

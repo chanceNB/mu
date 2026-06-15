@@ -33,11 +33,11 @@ function displayStage(stage: string) {
   <header class="workspace-chat-header">
     <div class="session-title">
       <p class="eyebrow">AI 学习工作区</p>
-      <h2>{{ title || 'AI Learning Workspace' }}</h2>
+      <h2>{{ title || 'AI 学习工作区' }}</h2>
       <div class="session-meta" aria-label="Course context">
-        <span v-if="courseName">Course: {{ courseName }}</span>
-        <span v-if="topicName">Topic: {{ topicName }}</span>
-        <span class="progress-pill">In progress</span>
+        <span v-if="courseName">课程：{{ courseName }}</span>
+        <span v-if="topicName">知识点：{{ topicName }}</span>
+        <span class="progress-pill">进行中</span>
       </div>
     </div>
 

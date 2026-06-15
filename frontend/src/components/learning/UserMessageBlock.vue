@@ -7,9 +7,9 @@ defineProps<{
 
 <template>
   <article v-if="question || profilePrompt" class="message-row user-message">
-    <div class="message-avatar">?</div>
+    <div class="message-avatar">我</div>
     <div class="message-bubble">
-      <p class="message-label">??</p>
+      <p class="message-label">用户</p>
       <h3 v-if="question">{{ question }}</h3>
       <p v-if="profilePrompt" class="prompt-note">{{ profilePrompt }}</p>
     </div>

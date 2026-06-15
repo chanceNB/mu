@@ -30,18 +30,18 @@ function displayStage(stage: string) {
     <div class="message-bubble">
       <div class="ai-heading">
         <div>
-          <p class="message-label">AI ??</p>
-          <h3>AI ??</h3>
+          <p class="message-label">AI 回答</p>
+          <h3>AI 回答</h3>
         </div>
         <span class="stage-pill">{{ displayStage(stage) }}</span>
       </div>
       <p v-if="answer" class="answer-text">{{ answer }}</p>
-      <p v-else class="answer-empty">Waiting for input</p>
+      <p v-else class="answer-empty">等待输入</p>
       <SourceTags :sources="sources" />
       <p v-if="traceId" class="trace-line">Trace ID: {{ traceId }}</p>
       <div v-if="sources.length === 0" class="no-source-card" data-test="no-source-card">
         <AlertTriangle :size="17" aria-hidden="true" />
-        <span>??????</span>
+        <span>暂无引用来源</span>
       </div>
       <p v-if="errorMessage" class="error-text" role="status">{{ errorMessage }}</p>
     </div>

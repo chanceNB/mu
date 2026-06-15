@@ -56,40 +56,40 @@ function toggleResourceType(type: string, checked: boolean) {
 </script>
 
 <template>
-  <section class="mobbin-showcase" aria-label="Detailed AI learning controls">
+  <section class="mobbin-showcase" aria-label="学习应用展示区">
     <div class="mobbin-upgrade-banner">
       <div>
-        <p class="eyebrow">Student Learning Loop</p>
+        <p class="eyebrow">学生学习闭环</p>
         <h2>Course RAG + Agent Generation + Assessment</h2>
-        <p>画像、知识库、学习路径、生成资源、测评反馈和 Agent Trace 被整理成可浏览的学习应用陈列。</p>
+        <p>学习画像、知识库、学习路径、生成资源、测评反馈和 Agent Trace 会在这里集中展示。</p>
       </div>
-      <div class="mobbin-banner-stats" aria-label="Learning summary">
-        <span>{{ indexedDocuments }} indexed</span>
-        <span>{{ pendingDocuments }} pending</span>
-        <span>{{ averageMastery }}% mastery</span>
+      <div class="mobbin-banner-stats" aria-label="学习摘要">
+        <span>{{ indexedDocuments }} 已入库</span>
+        <span>{{ pendingDocuments }} 待处理</span>
+        <span>{{ averageMastery }}% 掌握度</span>
       </div>
     </div>
 
     <div class="mobbin-card-grid">
       <article class="mobbin-card" data-test="student-profile-showcase">
         <div class="mobbin-card-stage">
-          <span class="mobbin-card-badge">Updated</span>
+          <span class="mobbin-card-badge">已更新</span>
           <div class="mobbin-phone-preview profile-preview">
             <div class="phone-topbar"></div>
             <div class="profile-orb"><UserRound :size="28" aria-hidden="true" /></div>
-            <strong>{{ state.learnerProfile.learnerId || 'Profile pending' }}</strong>
-            <p>{{ state.learnerProfile.goal || 'No learning goal yet' }}</p>
+            <strong>{{ state.learnerProfile.learnerId || '画像待生成' }}</strong>
+            <p>{{ state.learnerProfile.goal || '暂无学习目标' }}</p>
             <div class="profile-meter">
               <span :style="{ width: `${averageMastery}%` }"></span>
             </div>
             <dl>
               <div>
-                <dt>Weakness</dt>
-                <dd>{{ state.learnerProfile.weakness || 'Not detected' }}</dd>
+                <dt>薄弱点</dt>
+                <dd>{{ state.learnerProfile.weakness || '暂无数据' }}</dd>
               </div>
               <div>
-                <dt>Preference</dt>
-                <dd>{{ state.learnerProfile.preference || 'Not detected' }}</dd>
+                <dt>偏好</dt>
+                <dd>{{ state.learnerProfile.preference || '暂无数据' }}</dd>
               </div>
             </dl>
           </div>
@@ -101,10 +101,10 @@ function toggleResourceType(type: string, checked: boolean) {
               v-model="state.profilePrompt"
               data-test="profile-prompt-input"
               rows="3"
-              placeholder="描述学习目标、当前卡点和资源偏好"
+              placeholder="补充学习目标"
             ></textarea>
           </label>
-          <div v-if="state.followUpQuestions.length" class="follow-up-list" aria-label="Profile follow-up questions">
+          <div v-if="state.followUpQuestions.length" class="follow-up-list" aria-label="画像追问">
             <button
               v-for="(question, index) in state.followUpQuestions"
               :key="question"
@@ -126,18 +126,18 @@ function toggleResourceType(type: string, checked: boolean) {
           <span class="mobbin-app-icon profile"><UserRound :size="20" aria-hidden="true" /></span>
           <div>
             <h3>学习画像</h3>
-            <p>{{ state.learnerProfile.major }} / {{ state.learnerProfile.weakness }}</p>
+            <p>{{ state.learnerProfile.major || '暂无专业信息' }} / {{ state.learnerProfile.weakness || '暂无薄弱点' }}</p>
           </div>
         </footer>
       </article>
 
       <article class="mobbin-card" data-test="knowledge-base-showcase">
         <div class="mobbin-card-stage">
-          <span class="mobbin-card-badge">Ready</span>
+          <span class="mobbin-card-badge">就绪</span>
           <div class="mobbin-phone-preview kb-preview">
             <Database :size="32" aria-hidden="true" />
-            <strong>{{ state.knowledgeBase.name }}</strong>
-            <p>{{ documents.length }} documents / {{ state.knowledgeBase.visibility }}</p>
+            <strong>{{ state.knowledgeBase.name || '暂无知识库' }}</strong>
+            <p>{{ documents.length }} 份资料 / {{ state.knowledgeBase.visibility || '暂无状态' }}</p>
             <ul class="mini-document-stack">
               <li v-for="document in documents.slice(0, 3)" :key="document.id">
                 <span>{{ document.name }}</span>
@@ -162,7 +162,7 @@ function toggleResourceType(type: string, checked: boolean) {
           <span class="mobbin-app-icon kb"><Database :size="20" aria-hidden="true" /></span>
           <div>
             <h3>知识库</h3>
-            <p>{{ indexedDocuments }} indexed, {{ pendingDocuments }} pending</p>
+            <p>{{ indexedDocuments }} 已入库，{{ pendingDocuments }} 待处理</p>
           </div>
         </footer>
       </article>
@@ -179,29 +179,30 @@ function toggleResourceType(type: string, checked: boolean) {
               <p>{{ node.reason }}</p>
               <div class="mini-meter"><span :style="{ width: `${node.mastery}%` }"></span></div>
             </section>
+            <p v-if="pathNodes.length === 0">暂无学习路径</p>
           </div>
         </div>
         <footer class="mobbin-card-footer">
           <span class="mobbin-app-icon path"><BookOpen :size="20" aria-hidden="true" /></span>
           <div>
             <h3>学习路径</h3>
-            <p>{{ pathNodes.length || 0 }} path nodes / {{ state.pathTraceId }}</p>
+            <p>{{ pathNodes.length || 0 }} 个节点 / {{ state.pathTraceId || '暂无 Trace' }}</p>
           </div>
         </footer>
       </article>
 
       <article class="mobbin-card" data-test="resource-showcase">
         <div class="mobbin-card-stage">
-          <span class="mobbin-card-badge">{{ displayStatus(state.resourceTaskStatus) }}</span>
+          <span class="mobbin-card-badge">{{ displayStatus(state.resourceTaskStatus) || '待生成' }}</span>
           <div class="mobbin-phone-preview resource-preview">
             <div class="resource-progress-ring">{{ state.resourceProgressPercent }}%</div>
-            <strong>{{ state.resourceTaskId || 'No task yet' }}</strong>
-            <p>{{ displayStatus(state.resourceReviewStatus) }} / {{ displayStatus(state.resourceSafetyStatus) }}</p>
+            <strong>{{ state.resourceTaskId || '暂无任务' }}</strong>
+            <p>{{ displayStatus(state.resourceReviewStatus) || '暂无审核状态' }} / {{ displayStatus(state.resourceSafetyStatus) || '暂无安全状态' }}</p>
             <div class="resource-mini-board">
-              <span>Approved {{ approvedResources.length }}</span>
-              <span>Pending {{ pendingReviewResources.length }}</span>
-              <span>Revision {{ revisionResources.length }}</span>
-              <span>Other {{ otherReviewResources.length }}</span>
+              <span>已通过 {{ approvedResources.length }}</span>
+              <span>待审核 {{ pendingReviewResources.length }}</span>
+              <span>需修改 {{ revisionResources.length }}</span>
+              <span>其他 {{ otherReviewResources.length }}</span>
             </div>
           </div>
         </div>
@@ -246,20 +247,20 @@ function toggleResourceType(type: string, checked: boolean) {
           <span class="mobbin-app-icon resource"><FileText :size="20" aria-hidden="true" /></span>
           <div>
             <h3>生成资源</h3>
-            <p>{{ resources.length }} resources / {{ state.resourceTraceId }}</p>
+            <p>{{ resources.length }} 个资源 / {{ state.resourceTraceId || '暂无 Trace' }}</p>
           </div>
         </footer>
       </article>
 
       <article class="mobbin-card" data-test="assessment-showcase">
         <div class="mobbin-card-stage">
-          <span class="mobbin-card-badge">Updated</span>
+          <span class="mobbin-card-badge">已更新</span>
           <div class="mobbin-phone-preview assessment-preview">
             <BarChart3 :size="30" aria-hidden="true" />
             <strong>{{ state.mastery }}%</strong>
-            <p>{{ state.assessmentStatus }}</p>
+            <p>{{ state.assessmentStatus || '暂无测评反馈' }}</p>
             <div class="mastery-meter"><span :style="{ width: `${state.mastery}%` }"></span></div>
-            <small>Replan {{ displayReplanRecordId(state.replanRecordId) }}</small>
+            <small>重规划 {{ displayReplanRecordId(state.replanRecordId) }}</small>
           </div>
         </div>
         <div class="mobbin-card-body">
@@ -269,7 +270,7 @@ function toggleResourceType(type: string, checked: boolean) {
               v-model="state.assessmentAnswer"
               data-test="assessment-answer-input"
               rows="3"
-              placeholder="提交前请说明你的推理过程"
+              placeholder="填写作答内容"
             ></textarea>
           </label>
           <button class="tool-button" type="button" data-test="submit-assessment" :disabled="isLoading" @click="emit('assess')">
@@ -281,7 +282,7 @@ function toggleResourceType(type: string, checked: boolean) {
           <span class="mobbin-app-icon assessment"><ClipboardCheck :size="20" aria-hidden="true" /></span>
           <div>
             <h3>测评反馈</h3>
-            <p>Assessment summary / score / feedback</p>
+            <p>测评摘要 / 得分 / 反馈</p>
           </div>
         </footer>
       </article>
@@ -290,8 +291,8 @@ function toggleResourceType(type: string, checked: boolean) {
         <div class="mobbin-card-stage">
           <span class="mobbin-card-badge">Trace</span>
           <div class="mobbin-phone-preview trace-preview">
-            <strong>{{ state.ragTraceId }}</strong>
-            <p>RAG stage: {{ displayStatus(state.sseStage) }}</p>
+            <strong>{{ state.ragTraceId || '暂无 Trace' }}</strong>
+            <p>RAG 阶段：{{ displayStatus(state.sseStage) }}</p>
             <ol>
               <li v-for="step in traceSteps.slice(-4)" :key="`${step.actor}-${step.detail}`">
                 <span>{{ step.actor }}</span>
@@ -304,7 +305,7 @@ function toggleResourceType(type: string, checked: boolean) {
           <span class="mobbin-app-icon trace"><GitBranch :size="20" aria-hidden="true" /></span>
           <div>
             <h3>Agent Trace</h3>
-            <p>{{ traceSteps.length }} events / citations {{ state.ragSources.length }}</p>
+            <p>{{ traceSteps.length }} 个事件 / {{ state.ragSources.length }} 条 Citation</p>
           </div>
         </footer>
       </article>

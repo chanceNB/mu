@@ -50,7 +50,7 @@ function displayStatus(status: PathNode['status']) {
       </section>
     </div>
 
-    <p v-else class="empty-state">??????</p>
+    <p v-else class="empty-state">暂无学习路径</p>
   </article>
 </template>
 

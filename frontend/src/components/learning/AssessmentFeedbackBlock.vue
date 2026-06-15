@@ -21,32 +21,32 @@ function displayReplanRecordId(replanRecordId: string) {
   <article class="stream-block assessment-block">
     <div class="block-heading">
       <div>
-        <p class="eyebrow">????</p>
-        <h3>????</h3>
+        <p class="eyebrow">测评反馈</p>
+        <h3>测评反馈</h3>
       </div>
       <ClipboardCheck :size="19" aria-hidden="true" />
     </div>
 
     <section class="feedback-stats" aria-label="Assessment stats">
       <article>
-        <span>??</span>
+        <span>得分</span>
         <strong>{{ score }}%</strong>
       </article>
       <article>
-        <span>???</span>
+        <span>重规划</span>
         <strong>{{ displayReplanRecordId(replanRecordId) }}</strong>
       </article>
     </section>
 
     <p v-if="status" class="feedback-copy">{{ status }}</p>
-    <p v-else class="feedback-copy empty-state">??????</p>
+    <p v-else class="feedback-copy empty-state">暂无测评反馈</p>
     <label class="answer-editor">
-      <span>??????</span>
+      <span>测评作答内容</span>
       <textarea
         :value="assessmentAnswer"
         data-test="assessment-answer-input"
         rows="3"
-        placeholder="??????"
+        placeholder="填写作答内容"
         @input="$emit('update:assessmentAnswer', ($event.target as HTMLTextAreaElement).value)"
       ></textarea>
     </label>
@@ -91,7 +91,7 @@ function displayReplanRecordId(replanRecordId: string) {
 
 .feedback-stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -119,18 +119,10 @@ function displayReplanRecordId(replanRecordId: string) {
   overflow-wrap: anywhere;
 }
 
-.feedback-copy,
-.suggestion {
+.feedback-copy {
   color: #475569;
   font-size: 14px;
   line-height: 1.5;
-}
-
-.suggestion {
-  padding: 12px;
-  background: #f5f3ff;
-  border: 1px solid #ddd6fe;
-  border-radius: 8px;
 }
 
 .answer-editor {

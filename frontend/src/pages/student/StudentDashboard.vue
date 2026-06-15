@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import MobbinLearningShowcase from '../../components/learning/MobbinLearningShowcase.vue'
 import WorkspaceComposer from '../../components/workspace/WorkspaceComposer.vue'
 import WorkspaceHeader from '../../components/workspace/WorkspaceHeader.vue'
 import WorkspaceStream from '../../components/workspace/WorkspaceStream.vue'
-import MobbinLearningShowcase from '../../components/learning/MobbinLearningShowcase.vue'
 import { submitAnswer } from '../../api/assessment'
 import {
   createKnowledgeBase,
   fetchDocumentStatus,
-  listKnowledgeBases,
   listKnowledgeBaseDocuments,
+  listKnowledgeBases,
   uploadKnowledgeBaseDocument,
 } from '../../api/documents'
 import { createLearningPath, extractProfile } from '../../api/learning'
@@ -22,8 +22,8 @@ import type {
   DocumentStatusResponse,
   DocumentUploadResponse,
   GeneratedResource,
-  GeneratedResourceStatus,
   GeneratedResourceResponse,
+  GeneratedResourceStatus,
   LearningPathNodeResponse,
   PathNode,
   ProfileExtractResponse,
@@ -37,7 +37,7 @@ const LEARNER_ID = 'stu_001'
 const GOAL_ID = 'goal_java_backend'
 const KNOWLEDGE_BASE_NAME = 'Student knowledge base'
 const KNOWLEDGE_BASE_DESCRIPTION = 'Student uploaded course materials'
-const JOIN_QUESTION_ID = 'student_assessment_question'
+const ASSESSMENT_QUESTION_ID = 'student_assessment_question'
 const RESOURCE_TYPES = ['LECTURE', 'MIND_MAP', 'EXERCISE', 'READING', 'CODE_LAB']
 const REPLAN_NOT_CREATED = 'Not created'
 const EMPTY_RESOURCE_TASK_ID = ''
@@ -86,8 +86,16 @@ const state = ref<WorkbenchState>({
   loadingAction: '',
   errorMessage: '',
 })
+
 const documents = computed(() => state.value.documents)
 const resources = computed(() => state.value.resources)
+const pathNodes = computed(() => state.value.pathNodes)
+const traceSteps = computed(() => state.value.traceSteps)
+const isLoading = computed(() => state.value.loadingAction !== '')
+const selectedDocumentFile = ref<File | null>(null)
+const selectedDocumentFileName = computed(() => selectedDocumentFile.value?.name ?? '')
+const selectedResourceTypes = ref<string[]>([])
+
 const approvedResources = computed(() => resources.value.filter((resource) => resource.status === 'APPROVED'))
 const pendingReviewResources = computed(() =>
   resources.value.filter((resource) => resource.status === 'PENDING_CRITIC'),
@@ -98,12 +106,6 @@ const revisionResources = computed(() =>
 const otherReviewResources = computed(() =>
   resources.value.filter((resource) => resource.status === 'OTHER_REVIEW_STATUS'),
 )
-const pathNodes = computed(() => state.value.pathNodes)
-const traceSteps = computed(() => state.value.traceSteps)
-const isLoading = computed(() => state.value.loadingAction !== '')
-const selectedDocumentFile = ref<File | null>(null)
-const selectedDocumentFileName = computed(() => selectedDocumentFile.value?.name ?? '')
-const selectedResourceTypes = ref<string[]>([])
 
 const workflowSteps = computed(() => [
   { id: 'profile', label: '画像', complete: Boolean(state.value.profileTraceId) },
@@ -120,43 +122,24 @@ const workflowSteps = computed(() => [
   { id: 'assessment', label: '测评反馈', complete: state.value.replanRecordId !== REPLAN_NOT_CREATED },
 ])
 
-const indexedDocuments = computed(
-  () => documents.value.filter((document) => document.status === 'INDEXED').length,
-)
-
-const pendingDocuments = computed(
-  () => documents.value.filter((document) => document.status === 'PENDING').length,
-)
-
+const indexedDocuments = computed(() => documents.value.filter((document) => document.status === 'INDEXED').length)
+const pendingDocuments = computed(() => documents.value.filter((document) => document.status === 'PENDING').length)
 const averageMastery = computed(() => {
-  if (pathNodes.value.length === 0) {
-    return state.value.mastery
-  }
-
-  const nodeAverage =
-    pathNodes.value.reduce((sum, node) => sum + node.mastery, 0) / pathNodes.value.length
+  if (pathNodes.value.length === 0) return state.value.mastery
+  const nodeAverage = pathNodes.value.reduce((sum, node) => sum + node.mastery, 0) / pathNodes.value.length
   return Math.round((nodeAverage + state.value.mastery) / 2)
 })
 const localizedErrorMessage = computed(() => displayErrorMessage(state.value.errorMessage))
-
-const usesSensitiveUrlSafeRagTransport = computed(
-  () => import.meta.env.PROD || import.meta.env.MODE === 'staging',
-)
+const usesSensitiveUrlSafeRagTransport = computed(() => import.meta.env.PROD || import.meta.env.MODE === 'staging')
 
 onMounted(() => {
-  void bootstrapWorkbench()
+  void initializeKnowledgeBase()
 })
-
-async function bootstrapWorkbench() {
-  await initializeKnowledgeBase()
-}
 
 async function initializeKnowledgeBase() {
   try {
     const knowledgeBases = await listKnowledgeBases()
-    const selected =
-      knowledgeBases.find((knowledgeBase) => knowledgeBase.name === KNOWLEDGE_BASE_NAME) ??
-      knowledgeBases[0]
+    const selected = knowledgeBases.find((knowledgeBase) => knowledgeBase.name === KNOWLEDGE_BASE_NAME) ?? knowledgeBases[0]
     if (selected) {
       applyKnowledgeBase(selected)
       await initializeKnowledgeBaseDocuments(selected.id)
@@ -192,7 +175,7 @@ function selectFollowUpQuestion(question: string) {
 async function refineProfile() {
   const message = state.value.profilePrompt.trim()
   if (!message) {
-    state.value.errorMessage = '更新画像前请输入学习者背景。'
+    state.value.errorMessage = '请先补充学习目标'
     return
   }
 
@@ -203,6 +186,7 @@ async function refineProfile() {
       message,
     })
     applyProfileResponse(profile)
+
     const path = await createLearningPath({
       learnerId: state.value.learnerProfile.learnerId || LEARNER_ID,
       goalId: state.value.goalId,
@@ -215,6 +199,11 @@ async function refineProfile() {
   }
 }
 
+function selectDocumentFile(event: Event) {
+  const input = event.target as HTMLInputElement
+  selectedDocumentFile.value = input.files?.[0] ?? null
+}
+
 async function uploadDocument() {
   if (state.value.loadingAction === 'document') return
 
@@ -222,12 +211,12 @@ async function uploadDocument() {
   try {
     const file = selectedDocumentFile.value
     if (!file) {
-      state.value.errorMessage = '上传前请先选择文档。'
+      state.value.errorMessage = '请先选择课程资料'
       return
     }
     const activeNode = activePathNode()
     if (!activeNode) {
-      state.value.errorMessage = '学习路径为空，请先创建路径再上传文档。'
+      state.value.errorMessage = '学习路径为空，请先创建路径再上传资料'
       return
     }
 
@@ -243,11 +232,6 @@ async function uploadDocument() {
   } finally {
     finishAction('document')
   }
-}
-
-function selectDocumentFile(event: Event) {
-  const input = event.target as HTMLInputElement
-  selectedDocumentFile.value = input.files?.[0] ?? null
 }
 
 function viewLearningPath() {
@@ -267,15 +251,14 @@ async function askRag() {
   startAction('rag')
   state.value.sseStage = 'RETRIEVING'
   state.value.ragAnswer = ''
-  const useRestOnlyTransport = usesSensitiveUrlSafeRagTransport.value
   try {
-    if (useRestOnlyTransport) {
+    if (usesSensitiveUrlSafeRagTransport.value) {
       await streamRagQueryResponse()
     } else {
       await streamRagResponse()
     }
   } catch (error) {
-    if (useRestOnlyTransport) {
+    if (usesSensitiveUrlSafeRagTransport.value) {
       state.value.sseStage = 'ERROR'
       captureError('CourseRagAgent', error)
     } else {
@@ -288,9 +271,7 @@ async function askRag() {
 
 function streamRagResponse(): Promise<void> {
   return new Promise((resolve, reject) => {
-    const source = streamChat(`session_${LEARNER_ID}`, state.value.ragQuestion, [
-      state.value.knowledgeBase.id,
-    ])
+    const source = streamChat(`session_${LEARNER_ID}`, state.value.ragQuestion, [state.value.knowledgeBase.id])
     const close = () => source.close()
     const failInvalidPayload = () => {
       close()
@@ -299,25 +280,15 @@ function streamRagResponse(): Promise<void> {
 
     source.addEventListener('status', (event) => {
       const data = parseSsePayload<{ stage?: string }>(event, failInvalidPayload)
-      if (!data) return
-
-      if (data.stage) {
-        state.value.sseStage = data.stage
-      }
+      if (data?.stage) state.value.sseStage = data.stage
     })
     source.addEventListener('token', (event) => {
       const data = parseSsePayload<{ text?: string }>(event, failInvalidPayload)
-      if (!data) return
-
-      state.value.ragAnswer += data.text ?? ''
+      state.value.ragAnswer += data?.text ?? ''
     })
     source.addEventListener('done', (event) => {
-      const data = parseSsePayload<{
-        traceId: string
-        sources: RagQueryResponse['sources']
-      }>(event, failInvalidPayload)
+      const data = parseSsePayload<{ traceId: string; sources: RagQueryResponse['sources'] }>(event, failInvalidPayload)
       if (!data) return
-
       applyRagResponse({
         answer: state.value.ragAnswer,
         traceId: data.traceId,
@@ -342,9 +313,7 @@ async function streamRagQueryResponse() {
     },
     {
       onStatus: ({ stage }) => {
-        if (stage) {
-          state.value.sseStage = stage
-        }
+        if (stage) state.value.sseStage = stage
       },
       onToken: ({ text }) => {
         state.value.ragAnswer += text ?? ''
@@ -397,9 +366,10 @@ async function generateResources() {
     finishAction('resources')
     return
   }
+
   const activeNode = activePathNode()
   if (!activeNode) {
-    state.value.errorMessage = '学习路径为空，请先创建路径再生成资源。'
+    state.value.errorMessage = '学习路径为空，请先创建路径再生成资源'
     finishAction('resources')
     return
   }
@@ -452,7 +422,7 @@ async function submitAssessment() {
   try {
     const response = await submitAnswer({
       learnerId: state.value.learnerProfile.learnerId || LEARNER_ID,
-      questionId: JOIN_QUESTION_ID,
+      questionId: ASSESSMENT_QUESTION_ID,
       answer: state.value.assessmentAnswer,
     })
     applyAssessmentResponse(response)
@@ -463,24 +433,35 @@ async function submitAssessment() {
   }
 }
 
-function appendTrace(step: TraceStep) {
-  state.value.traceSteps = [...state.value.traceSteps, step]
+function applyKnowledgeBase(response: {
+  id: string
+  name: string
+  visibility: string
+  ownerUserId: string
+}) {
+  state.value.knowledgeBase = {
+    id: response.id,
+    name: response.name,
+    visibility: response.visibility,
+    owner: response.ownerUserId,
+  }
+}
+
+function applyDocumentListResponse(response: DocumentStatusResponse[]) {
+  state.value.documents = response.map((document) => toDocumentRecord(document))
 }
 
 function applyDocumentUploadResponse(response: DocumentUploadResponse, fileName: string) {
   const document: DocumentRecord = {
     id: response.documentId,
     name: fileName,
-    type: 'Markdown',
+    type: inferDocumentType(fileName),
     status: normalizeDocumentStatus(response.status),
     indexTaskId: response.indexTaskId,
     chunks: 0,
     updatedAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
   }
-  state.value.documents = [
-    ...state.value.documents.filter((existing) => existing.id !== response.documentId),
-    document,
-  ]
+  state.value.documents = [...state.value.documents.filter((existing) => existing.id !== response.documentId), document]
   appendTrace({
     actor: 'DocumentController',
     status: 'RUNNING',
@@ -499,20 +480,13 @@ function applyDocumentStatusResponse(response: DocumentStatusResponse, indexTask
     chunks: 0,
     updatedAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
   }
-  state.value.documents = [
-    ...state.value.documents.filter((existing) => existing.id !== response.documentId),
-    document,
-  ]
+  state.value.documents = [...state.value.documents.filter((existing) => existing.id !== response.documentId), document]
   appendTrace({
     actor: 'DocumentController',
     status: document.status === 'INDEXED' ? 'DONE' : 'RUNNING',
     detail: `Document ${response.documentId} parse ${response.parseStatus}, index ${response.indexStatus}.`,
     latencyMs: 64,
   })
-}
-
-function applyDocumentListResponse(response: DocumentStatusResponse[]) {
-  state.value.documents = response.map((document) => toDocumentRecord(document))
 }
 
 function toDocumentRecord(response: DocumentStatusResponse): DocumentRecord {
@@ -524,20 +498,6 @@ function toDocumentRecord(response: DocumentStatusResponse): DocumentRecord {
     indexTaskId: `v${response.version}`,
     chunks: 0,
     updatedAt: 'Backend document',
-  }
-}
-
-function applyKnowledgeBase(response: {
-  id: string
-  name: string
-  visibility: string
-  ownerUserId: string
-}) {
-  state.value.knowledgeBase = {
-    id: response.id,
-    name: response.name,
-    visibility: response.visibility,
-    owner: response.ownerUserId,
   }
 }
 
@@ -569,17 +529,6 @@ function applyProfileResponse(response: ProfileExtractResponse) {
   })
 }
 
-function applyResourceGenerationResponse(response: ResourceGenerationResponse) {
-  state.value.resourceTaskId = response.taskId
-  state.value.resourceTaskStatus = response.status
-  state.value.resourceReviewStatus = response.reviewStatus
-  state.value.resourceProgressPercent = response.progressPercent
-  state.value.resourceSafetyStatus = response.safetyStatus
-  state.value.agentTaskId = response.agentTaskId
-  state.value.resourceTraceId = response.traceId
-  state.value.resources = (response.resources ?? []).map(toGeneratedResource)
-}
-
 function applyLearningPathResponse(response: {
   goalId: string
   nodes: LearningPathNodeResponse[]
@@ -608,21 +557,23 @@ function applyRagResponse(response: RagQueryResponse) {
     excerpt: source.excerpt,
     score: source.score,
   }))
-  state.value.traceSteps = state.value.traceSteps.map((step) =>
-    step.actor === 'CourseRagAgent'
-      ? {
-          ...step,
-          status: 'DONE',
-          detail: 'Backend RAG query completed with permission-filtered citations.',
-          latencyMs: 1200,
-        }
-      : step,
-  )
+  upsertTrace({
+    actor: 'CourseRagAgent',
+    status: 'DONE',
+    detail: 'Backend RAG query completed with permission-filtered citations.',
+    latencyMs: 1200,
+  })
 }
 
-function upsertTrace(step: TraceStep) {
-  const withoutActor = state.value.traceSteps.filter((existing) => existing.actor !== step.actor)
-  state.value.traceSteps = [...withoutActor, step]
+function applyResourceGenerationResponse(response: ResourceGenerationResponse) {
+  state.value.resourceTaskId = response.taskId
+  state.value.resourceTaskStatus = response.status
+  state.value.resourceReviewStatus = response.reviewStatus
+  state.value.resourceProgressPercent = response.progressPercent
+  state.value.resourceSafetyStatus = response.safetyStatus
+  state.value.agentTaskId = response.agentTaskId
+  state.value.resourceTraceId = response.traceId
+  state.value.resources = (response.resources ?? []).map(toGeneratedResource)
 }
 
 function applyAgentTrace(response: AgentTraceResponse) {
@@ -709,9 +660,7 @@ function normalizeDocumentStatus(status: DocumentUploadResponse['status']): Docu
   return status === 'FAILED' ? 'FAILED' : 'PENDING'
 }
 
-function normalizeBackendDocumentStatus(
-  status: DocumentStatusResponse['indexStatus'],
-): DocumentRecord['status'] {
+function normalizeBackendDocumentStatus(status: DocumentStatusResponse['indexStatus']): DocumentRecord['status'] {
   if (status === 'INDEXED') return 'INDEXED'
   if (status === 'FAILED') return 'FAILED'
   return status === 'READY' ? 'READY' : 'PENDING'
@@ -726,6 +675,15 @@ function inferDocumentType(name: string): string {
 
 function activePathNode(): PathNode | null {
   return pathNodes.value.find((node) => node.status === 'ACTIVE') ?? pathNodes.value[0]
+}
+
+function appendTrace(step: TraceStep) {
+  state.value.traceSteps = [...state.value.traceSteps, step]
+}
+
+function upsertTrace(step: TraceStep) {
+  const withoutActor = state.value.traceSteps.filter((existing) => existing.actor !== step.actor)
+  state.value.traceSteps = [...withoutActor, step]
 }
 
 function startAction(action: string) {
@@ -774,10 +732,10 @@ function displayStatus(status: string) {
     PENDING_CRITIC: '待审核',
     APPROVED: '已通过',
     REVISION_REQUESTED: '需修改',
-    OTHER_REVIEW_STATUS: '其他状态',
+    OTHER_REVIEW_STATUS: '其他',
     COMPLETED: '已完成',
     PASS: '通过',
-    BLOCKED: '已拦截',
+    BLOCKED: '已阻塞',
   }
   return statusLabels[status] ?? status
 }
@@ -875,9 +833,9 @@ function asPercent(value: number): number {
       @refine-profile="refineProfile"
       @select-follow-up-question="selectFollowUpQuestion"
     />
-
   </section>
 </template>
+
 <style scoped>
 .student-ai-page {
   display: block;
@@ -894,9 +852,5 @@ function asPercent(value: number): number {
 .student-ai-workspace {
   position: relative;
   min-height: 100svh;
-}
-
-.student-legacy-panels {
-  display: none;
 }
 </style>
