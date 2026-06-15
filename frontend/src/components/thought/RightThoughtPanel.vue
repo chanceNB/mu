@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { Bot, ChevronLeft, ChevronRight, EyeOff, PanelRightOpen, X } from 'lucide-vue-next'
 import AgentTimeline from './AgentTimeline.vue'
 import CurrentTaskCard from './CurrentTaskCard.vue'
@@ -31,16 +32,121 @@ const emit = defineEmits<{
   (event: 'hidden-change', value: boolean): void
 }>()
 
-const fallback = createDefaultThoughtPanelData()
+const route = useRoute()
 const collapsed = ref(props.initiallyCollapsed)
 const hidden = ref(false)
 
-const panelData = computed(() => ({
-  currentTask: props.currentTask ?? fallback.currentTask,
-  agentSteps: props.agentSteps?.length ? props.agentSteps : fallback.agentSteps,
-  ragSources: props.ragSources ?? fallback.ragSources,
-  metrics: props.metrics ?? fallback.metrics,
-}))
+const routeFallback = computed(() => {
+  if (route.name === 'teacher') {
+    return {
+      currentTask: {
+        title: 'AI 审核线索',
+        taskType: 'Teacher decision',
+        model: 'Critic / Safety / Citation',
+        traceId: 'review-context',
+        startedAt: 'Review Inbox',
+        status: 'running' as const,
+      },
+      agentSteps: [
+        { name: 'Citation', status: 'running' as const, duration: '-', summary: '检查资源是否具备可追溯引用。' },
+        { name: 'Critic', status: 'waiting' as const, duration: '-', summary: '等待教师结合摘要做最终判断。' },
+        { name: 'Safety', status: 'waiting' as const, duration: '-', summary: '关注安全、事实性和学习者适配。' },
+      ],
+      ragSources: {
+        knowledgeBase: '审核证据',
+        chunkCount: 1,
+        documents: [{ name: 'Citation / Critic / Safety', excerpt: '选择审核项后，页面主区域会展示后端返回的资源摘要和技术字段。' }],
+      },
+      metrics: { latency: '-', totalTokens: '-', modelCalls: '-', fallback: 'Teacher decision', safety: 'Review required' },
+    }
+  }
+
+  if (route.name === 'admin') {
+    return {
+      currentTask: {
+        title: 'Runtime Signals',
+        taskType: 'Operations',
+        model: 'Health / Analytics / Alerts',
+        traceId: 'runtime-context',
+        startedAt: 'Command Center',
+        status: 'running' as const,
+      },
+      agentSteps: [
+        { name: 'Health', status: 'running' as const, duration: '-', summary: '跟踪应用、数据库、Redis、MinIO、模型和向量索引。' },
+        { name: 'Token budget', status: 'waiting' as const, duration: '-', summary: 'Token 用量来自 analytics overview。' },
+        { name: 'Alerts', status: 'waiting' as const, duration: '-', summary: '持久化告警可在运维页确认。' },
+      ],
+      ragSources: {
+        knowledgeBase: 'Runtime Trace',
+        chunkCount: 1,
+        documents: [{ name: 'Health / Alerts / Trace', excerpt: '运维页保留健康检查、分析概览和告警确认 API。' }],
+      },
+      metrics: { latency: 'health', totalTokens: 'analytics', modelCalls: 'overview', fallback: 'alerts', safety: 'ops' },
+    }
+  }
+
+  if (route.name === 'admin-model-providers') {
+    return {
+      currentTask: {
+        title: 'Provider Strategy',
+        taskType: 'Model Provider Hub',
+        model: 'Default / Fallback / Test',
+        traceId: 'provider-context',
+        startedAt: 'Provider Hub',
+        status: 'running' as const,
+      },
+      agentSteps: [
+        { name: 'Default provider', status: 'running' as const, duration: '-', summary: '默认 Provider 决定主模型调用通道。' },
+        { name: 'Fallback', status: 'waiting' as const, duration: '-', summary: '备用 Provider 用于支撑后端 Fallback 策略。' },
+        { name: 'Test result', status: 'waiting' as const, duration: '-', summary: '测试连接不会回显已有 API key 明文。' },
+      ],
+      ragSources: {
+        knowledgeBase: 'Provider Governance',
+        chunkCount: 1,
+        documents: [{ name: 'Default / Fallback / Token usage', excerpt: 'Provider 页面只改配置展示，不改变保存、测试和设默认 API。' }],
+      },
+      metrics: { latency: 'test', totalTokens: 'ops', modelCalls: 'provider', fallback: 'configured', safety: 'masked key' },
+    }
+  }
+
+  return {
+    currentTask: {
+      title: '学习思考流',
+      taskType: 'RAG / Agent timeline',
+      model: 'Learning OS',
+      traceId: 'student-context',
+      startedAt: 'Learning workbench',
+      status: 'running' as const,
+    },
+    agentSteps: [
+      { name: 'RAG', status: 'running' as const, duration: '-', summary: '围绕课程资料检索、引用和回答。' },
+      { name: 'Agent timeline', status: 'waiting' as const, duration: '-', summary: '展示画像、路径、资源生成和测评闭环。' },
+    ],
+    ragSources: {
+      knowledgeBase: '学习工作台',
+      chunkCount: 1,
+      documents: [{ name: 'RAG / Agent timeline', excerpt: '学习工作台会在主区域展示真实引用来源和生成链路。' }],
+    },
+    metrics: { latency: '-', totalTokens: '-', modelCalls: '-', fallback: 'RAG fallback', safety: 'resource review' },
+  }
+})
+
+const panelData = computed(() => {
+  const fallback = createDefaultThoughtPanelData()
+  return {
+    currentTask: props.currentTask ?? routeFallback.value.currentTask ?? fallback.currentTask,
+    agentSteps: props.agentSteps?.length ? props.agentSteps : routeFallback.value.agentSteps,
+    ragSources: props.ragSources ?? routeFallback.value.ragSources,
+    metrics: props.metrics ?? routeFallback.value.metrics,
+  }
+})
+
+const panelCopy = computed(() => {
+  if (route.name === 'teacher') return { eyebrow: 'Review Signals', title: 'AI 审核线索', aria: 'AI 审核线索' }
+  if (route.name === 'admin') return { eyebrow: 'Runtime Signals', title: '运行信号', aria: 'Runtime Signals' }
+  if (route.name === 'admin-model-providers') return { eyebrow: 'Provider Strategy', title: 'Provider 策略', aria: 'Provider Strategy' }
+  return { eyebrow: 'Thought Stream', title: '学习思考流', aria: '学习思考流' }
+})
 
 function toggleCollapsed() {
   const nextCollapsed = !collapsed.value
@@ -65,7 +171,7 @@ function showPanel() {
   <aside
     v-if="!hidden"
     :class="['right-thought-panel', { collapsed }]"
-    aria-label="AI 思考流"
+    :aria-label="panelCopy.aria"
     data-test="right-thought-panel"
   >
     <header :class="['thought-panel-header', { collapsed }]">
@@ -75,8 +181,8 @@ function showPanel() {
             <Bot :size="18" aria-hidden="true" />
           </span>
           <div>
-            <p class="thought-eyebrow">Thought Stream</p>
-            <h2>AI 思考流</h2>
+            <p class="thought-eyebrow">{{ panelCopy.eyebrow }}</p>
+            <h2>{{ panelCopy.title }}</h2>
           </div>
         </div>
 
@@ -84,7 +190,7 @@ function showPanel() {
           <button
             type="button"
             data-test="thought-panel-collapse"
-            aria-label="折叠 AI 思考流"
+            :aria-label="`折叠 ${panelCopy.title}`"
             title="折叠"
             @click="toggleCollapsed"
           >
@@ -93,7 +199,7 @@ function showPanel() {
           <button
             type="button"
             data-test="thought-panel-hide"
-            aria-label="隐藏 AI 思考流"
+            :aria-label="`隐藏 ${panelCopy.title}`"
             title="隐藏"
             @click="hidePanel"
           >
@@ -107,7 +213,7 @@ function showPanel() {
           class="collapsed-expand-button"
           type="button"
           data-test="thought-panel-expand"
-          aria-label="展开 AI 思考流"
+          :aria-label="`展开 ${panelCopy.title}`"
           title="展开"
           @click="toggleCollapsed"
         >
@@ -123,9 +229,9 @@ function showPanel() {
       <RuntimeMetricsCard :metrics="panelData.metrics" />
     </div>
 
-    <div v-else class="collapsed-content" aria-label="AI 思考流已折叠">
+    <div v-else class="collapsed-content" :aria-label="`${panelCopy.title}已折叠`">
       <Bot :size="20" aria-hidden="true" />
-      <span>AI 思考流</span>
+      <span>{{ panelCopy.title }}</span>
       <em :class="['collapsed-status', panelData.currentTask.status]">{{ panelData.currentTask.status }}</em>
     </div>
   </aside>
@@ -135,12 +241,12 @@ function showPanel() {
     class="thought-panel-restore"
     type="button"
     data-test="thought-panel-restore"
-    aria-label="显示 AI 思考流"
-    title="显示 AI 思考流"
+    :aria-label="`显示 ${panelCopy.title}`"
+    :title="`显示 ${panelCopy.title}`"
     @click="showPanel"
   >
     <PanelRightOpen :size="18" aria-hidden="true" />
-    <span>AI 思考流</span>
+    <span>{{ panelCopy.title }}</span>
     <EyeOff :size="14" aria-hidden="true" />
   </button>
 </template>

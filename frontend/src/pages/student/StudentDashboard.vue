@@ -755,11 +755,16 @@ function normalizeTraceStatus(status: string): TraceStep['status'] {
 function asPercent(value: number): number {
   return Math.round(value <= 1 ? value * 100 : value)
 }
+
+defineExpose({
+  askRag,
+  viewLearningPath,
+})
 </script>
 
 <template>
-  <section class="workspace student-ai-page" aria-label="Learning workbench">
-    <div class="student-ai-workspace">
+  <main class="student-workbench" aria-label="学习工作台">
+    <section class="workbench-ai-section" aria-label="AI 问答与 RAG 工作区">
       <WorkspaceHeader
         :title="state.learnerProfile.goal"
         :course-name="state.knowledgeBase.name"
@@ -770,87 +775,135 @@ function asPercent(value: number): number {
         :pending-documents="pendingDocuments"
         :workflow-steps="workflowSteps"
       />
-      <WorkspaceStream
-        v-model:assessment-answer="state.assessmentAnswer"
-        :question="state.ragQuestion"
-        :profile-prompt="state.profilePrompt"
-        :answer="state.ragAnswer"
-        :stage="state.sseStage"
-        :trace-id="state.ragTraceId"
-        :sources="state.ragSources"
+      <div class="ai-stream-shell">
+        <WorkspaceStream
+          v-model:assessment-answer="state.assessmentAnswer"
+          :question="state.ragQuestion"
+          :profile-prompt="state.profilePrompt"
+          :answer="state.ragAnswer"
+          :stage="state.sseStage"
+          :trace-id="state.ragTraceId"
+          :sources="state.ragSources"
+          :path-nodes="pathNodes"
+          :resources="resources"
+          :resource-task-status="state.resourceTaskStatus"
+          :resource-review-status="state.resourceReviewStatus"
+          :resource-progress-percent="state.resourceProgressPercent"
+          :resource-safety-status="state.resourceSafetyStatus"
+          :mastery="state.mastery"
+          :assessment-status="state.assessmentStatus"
+          :replan-record-id="state.replanRecordId"
+          :error-message="localizedErrorMessage"
+        />
+        <WorkspaceComposer
+          v-model:question="state.ragQuestion"
+          v-model:selected-resource-types="selectedResourceTypes"
+          :selected-file-name="selectedDocumentFileName"
+          :resource-types="RESOURCE_TYPES"
+          :is-loading="isLoading"
+          :loading-action="state.loadingAction"
+          @select-file="selectDocumentFile"
+          @upload="uploadDocument"
+          @generate="generateResources"
+          @assess="submitAssessment"
+          @view-path="viewLearningPath"
+          @send="askRag"
+        />
+      </div>
+    </section>
+
+    <section class="workbench-dashboard-section" aria-label="学习仪表盘">
+      <MobbinLearningShowcase
+        v-model:selected-resource-types="selectedResourceTypes"
+        :state="state"
+        :documents="documents"
         :path-nodes="pathNodes"
         :resources="resources"
-        :resource-task-status="state.resourceTaskStatus"
-        :resource-review-status="state.resourceReviewStatus"
-        :resource-progress-percent="state.resourceProgressPercent"
-        :resource-safety-status="state.resourceSafetyStatus"
-        :mastery="state.mastery"
-        :assessment-status="state.assessmentStatus"
-        :replan-record-id="state.replanRecordId"
-        :error-message="localizedErrorMessage"
-      />
-      <WorkspaceComposer
-        v-model:question="state.ragQuestion"
-        v-model:selected-resource-types="selectedResourceTypes"
-        :selected-file-name="selectedDocumentFileName"
+        :trace-steps="traceSteps"
+        :selected-document-file-name="selectedDocumentFileName"
         :resource-types="RESOURCE_TYPES"
+        :indexed-documents="indexedDocuments"
+        :pending-documents="pendingDocuments"
+        :average-mastery="averageMastery"
+        :approved-resources="approvedResources"
+        :pending-review-resources="pendingReviewResources"
+        :revision-resources="revisionResources"
+        :other-review-resources="otherReviewResources"
+        :localized-error-message="localizedErrorMessage"
         :is-loading="isLoading"
-        :loading-action="state.loadingAction"
+        :display-status="displayStatus"
+        :display-replan-record-id="displayReplanRecordId"
         @select-file="selectDocumentFile"
         @upload="uploadDocument"
         @generate="generateResources"
+        @refresh-resource-status="refreshResourceStatus"
         @assess="submitAssessment"
-        @view-path="viewLearningPath"
-        @send="askRag"
+        @refine-profile="refineProfile"
+        @select-follow-up-question="selectFollowUpQuestion"
       />
-    </div>
-
-    <MobbinLearningShowcase
-      v-model:selected-resource-types="selectedResourceTypes"
-      :state="state"
-      :documents="documents"
-      :path-nodes="pathNodes"
-      :resources="resources"
-      :trace-steps="traceSteps"
-      :selected-document-file-name="selectedDocumentFileName"
-      :resource-types="RESOURCE_TYPES"
-      :indexed-documents="indexedDocuments"
-      :pending-documents="pendingDocuments"
-      :average-mastery="averageMastery"
-      :approved-resources="approvedResources"
-      :pending-review-resources="pendingReviewResources"
-      :revision-resources="revisionResources"
-      :other-review-resources="otherReviewResources"
-      :localized-error-message="localizedErrorMessage"
-      :is-loading="isLoading"
-      :display-status="displayStatus"
-      :display-replan-record-id="displayReplanRecordId"
-      @select-file="selectDocumentFile"
-      @upload="uploadDocument"
-      @generate="generateResources"
-      @refresh-resource-status="refreshResourceStatus"
-      @assess="submitAssessment"
-      @refine-profile="refineProfile"
-      @select-follow-up-question="selectFollowUpQuestion"
-    />
-  </section>
+    </section>
+  </main>
 </template>
 
 <style scoped>
-.student-ai-page {
-  display: block;
-  align-content: stretch;
-  gap: 0;
+.student-workbench {
+  display: grid;
+  gap: 28px;
   min-height: 100svh;
-  padding: 0;
-  overflow: visible;
+  min-width: 0;
+  padding: 22px;
+  overflow-x: hidden;
   background:
+    radial-gradient(circle at 16% 0%, rgba(237, 233, 254, 0.58), transparent 28%),
     linear-gradient(180deg, rgba(248, 250, 252, 0.82), rgba(241, 245, 249, 0.92)),
     #f6f7fb;
 }
 
-.student-ai-workspace {
+.workbench-ai-section {
+  min-width: 0;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 28px;
+  box-shadow: 0 24px 68px rgba(15, 23, 42, 0.08);
+}
+
+.ai-stream-shell {
   position: relative;
-  min-height: 100svh;
+  min-width: 0;
+}
+
+.workbench-ai-section :deep(.workspace-chat-header) {
+  border-bottom-color: rgba(226, 232, 240, 0.86);
+}
+
+.workbench-ai-section :deep(.workspace-stream) {
+  width: min(100%, 1040px);
+  max-height: none;
+  padding-bottom: 24px;
+  overflow: visible;
+}
+
+.workbench-ai-section :deep(.workspace-composer) {
+  position: static;
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  padding: 0 24px 24px;
+  pointer-events: auto;
+}
+
+.workbench-dashboard-section {
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .student-workbench {
+    gap: 24px;
+    padding: 14px;
+  }
+
+  .workbench-ai-section {
+    border-radius: 22px;
+  }
 }
 </style>
