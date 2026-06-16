@@ -19,13 +19,11 @@ import {
   updateModelProvider,
   type ModelProviderSummary,
 } from '../../api/modelProviders'
-import MobbinGlassCard from '../../components/mobbin/MobbinGlassCard.vue'
-import MobbinHero from '../../components/mobbin/MobbinHero.vue'
-import MobbinMetricStrip, { type MobbinMetricItem } from '../../components/mobbin/MobbinMetricStrip.vue'
+import { type MobbinMetricItem } from '../../components/mobbin/MobbinMetricStrip.vue'
 import MobbinPageShell from '../../components/mobbin/MobbinPageShell.vue'
-import MobbinPreviewFrame from '../../components/mobbin/MobbinPreviewFrame.vue'
 import MobbinStatusPill from '../../components/mobbin/MobbinStatusPill.vue'
 import MobbinTimeline, { type MobbinTimelineItem } from '../../components/mobbin/MobbinTimeline.vue'
+import '../../components/mobbin/console-layout.css'
 
 const providers = ref<ModelProviderSummary[]>([])
 const isLoading = ref(false)
@@ -268,77 +266,79 @@ async function testConnection(provider: ModelProviderSummary) {
 
 <template>
   <MobbinPageShell aria-label="模型供应商中心" data-test="admin-model-providers">
-    <MobbinHero
-      eyebrow="Model Provider Hub"
-      title="模型供应商中心"
-      description="以 marketplace 的方式管理 DeepSeek、OpenAI、DashScope、Xiaomi MiMo 与 Custom Provider，统一查看默认通道、连接状态、模型配置和治理策略。"
-    >
-      <template #actions>
-        <button class="mobbin-primary-button" type="button" :disabled="isLoading" @click="loadProviders">
-          <RefreshCw :size="18" aria-hidden="true" />
-          {{ isLoading ? '正在刷新 Provider' : '刷新 Provider' }}
-        </button>
-      </template>
-      <template #preview>
-        <MobbinPreviewFrame label="Provider Strategy">
-          <div class="provider-strategy-preview">
-            <PlugZap :size="24" aria-hidden="true" />
-            <strong>{{ primaryProvider?.displayName ?? '未配置默认 Provider' }}</strong>
-            <p>{{ primaryProvider?.baseUrl ?? '选择一个 Provider 并保存为默认后，模型调用会使用该通道。' }}</p>
-            <div>
-              <MobbinStatusPill :status="primaryProvider?.enabled ? 'ACTIVE' : 'MISSING'">
-                {{ primaryProvider?.enabled ? 'Active' : 'Missing' }}
-              </MobbinStatusPill>
-              <MobbinStatusPill :status="backupProvider ? 'READY' : 'WAITING'">
-                {{ backupProvider ? 'Fallback Ready' : 'No Fallback' }}
-              </MobbinStatusPill>
-            </div>
-          </div>
-        </MobbinPreviewFrame>
-      </template>
-    </MobbinHero>
-
-    <MobbinMetricStrip :items="metrics" />
+    <section class="status-bar provider-control-bar">
+      <article class="status-cell">
+        <span>当前默认 Provider</span>
+        <strong>{{ primaryProvider?.displayName ?? '未配置' }}</strong>
+        <p>{{ primaryProvider?.providerCode ?? '需要设置默认通道' }}</p>
+      </article>
+      <article class="status-cell">
+        <span>备用 Provider</span>
+        <strong>{{ backupProvider?.displayName ?? '未配置' }}</strong>
+        <p>{{ backupProvider?.baseUrl ?? '配置备用通道后支持 Fallback' }}</p>
+      </article>
+      <article class="status-cell">
+        <span>Provider 数量</span>
+        <strong>{{ providers.length }}</strong>
+        <p>{{ enabledCount }} 个已启用</p>
+      </article>
+      <article v-for="item in metrics.slice(2, 4)" :key="item.label" class="status-cell">
+        <span>{{ item.label }}</span>
+        <strong>{{ item.value }}</strong>
+        <p>{{ item.note }}</p>
+      </article>
+      <button class="mobbin-primary-button" type="button" :disabled="isLoading" @click="loadProviders">
+        <RefreshCw :size="18" aria-hidden="true" />
+        {{ isLoading ? '刷新中' : '刷新 Provider' }}
+      </button>
+    </section>
 
     <p v-if="errorMessage" class="mobbin-error" role="status">{{ errorMessage }}</p>
     <p v-if="successMessage" class="mobbin-success" role="status">{{ successMessage }}</p>
 
-    <section class="provider-hub-layout">
-      <div class="provider-market-column">
-        <MobbinGlassCard eyebrow="Provider Marketplace" title="从模板开始" elevated>
-          <template #icon>
-            <ServerCog :size="20" aria-hidden="true" />
-          </template>
-          <div class="marketplace-grid">
-            <button
-              v-for="template in providerTemplates"
-              :key="template.code"
-              type="button"
-              class="marketplace-card"
-              @click="startProviderDraft(template.code)"
-            >
-              <span class="provider-logo">{{ template.name.slice(0, 2).toUpperCase() }}</span>
+    <section class="three-column-desk provider-orchestration-layout">
+      <aside class="provider-marketplace" aria-label="Provider 市场">
+        <div class="panel-heading compact">
+          <div>
+            <span class="surface-eyebrow">Provider Marketplace</span>
+            <h1>模型市场</h1>
+          </div>
+          <ServerCog :size="20" aria-hidden="true" />
+        </div>
+
+        <div class="marketplace-grid">
+          <button
+            v-for="template in providerTemplates"
+            :key="template.code"
+            type="button"
+            :class="['marketplace-card', { selected: form.providerCode === template.code && !selectedProviderId }]"
+            @click="startProviderDraft(template.code)"
+          >
+            <span class="provider-logo">{{ template.name.slice(0, 2).toUpperCase() }}</span>
+            <span class="marketplace-copy">
               <strong>{{ template.name }}</strong>
               <p>{{ template.detail }}</p>
               <MobbinStatusPill :status="template.status">{{ template.status }}</MobbinStatusPill>
-            </button>
-          </div>
-          <button class="mobbin-secondary-button" type="button" data-test="new-provider" @click="resetForm">
-            <PlugZap :size="16" aria-hidden="true" />
-            新建 DeepSeek Provider
+            </span>
           </button>
-        </MobbinGlassCard>
+        </div>
 
-        <MobbinGlassCard eyebrow="Connections" title="已注册 Provider">
-          <template #icon>
-            <ShieldCheck :size="20" aria-hidden="true" />
-          </template>
-          <div v-if="providers.length" class="connection-grid">
-            <article v-for="provider in providers" :key="provider.id" :class="['connection-card', { selected: provider.id === selectedProviderId }]">
+        <button class="mobbin-secondary-button" type="button" data-test="new-provider" @click="resetForm">
+          <PlugZap :size="16" aria-hidden="true" />
+          新建 DeepSeek Provider
+        </button>
+
+        <section class="registered-providers">
+          <div class="panel-heading compact">
+            <h2>已注册连接</h2>
+            <ShieldCheck :size="18" aria-hidden="true" />
+          </div>
+          <ul v-if="providers.length" class="connection-list">
+            <li v-for="provider in providers" :key="provider.id" :class="{ selected: provider.id === selectedProviderId }">
               <button
                 type="button"
                 class="connection-main"
-                :data-test="`select-provider-${provider.providerCode}`"
+                :data-test="'select-provider-' + provider.providerCode"
                 @click="selectProvider(provider)"
               >
                 <span class="provider-logo small">{{ provider.displayName.slice(0, 2).toUpperCase() }}</span>
@@ -354,155 +354,196 @@ async function testConnection(provider: ModelProviderSummary) {
                 <span>Chat: {{ provider.chatModel ?? '未配置' }}</span>
                 <span>Embedding: {{ provider.embeddingModel ?? '未配置' }}</span>
               </div>
-              <div class="connection-actions">
-                <button type="button" @click="selectProvider(provider)">编辑</button>
-                <button type="button" :disabled="testingProviderId === provider.id" @click="testConnection(provider)">
-                  {{ testingProviderId === provider.id ? '测试中' : '测试连接' }}
-                </button>
-                <button v-if="!provider.defaultProvider" type="button" @click="markDefault(provider)">设为默认</button>
-              </div>
-            </article>
-          </div>
+            </li>
+          </ul>
           <p v-else class="mobbin-empty">暂无 Provider。请从预设或 Custom endpoint 创建第一个 Provider。</p>
-        </MobbinGlassCard>
-      </div>
+        </section>
+      </aside>
 
-      <div class="provider-config-column">
-        <MobbinGlassCard eyebrow="Configuration" :title="form.displayName || 'Provider 配置'" elevated data-test="provider-form">
-          <template #icon>
-            <Activity :size="20" aria-hidden="true" />
-          </template>
-
-          <div class="config-section-grid">
-            <section class="config-section">
-              <h4>基础信息</h4>
-              <div class="form-grid two-col">
-                <label>
-                  Provider 类型
-                  <select v-model="form.providerCode" :disabled="isEditing" @change="applyPreset(form.providerCode)">
-                    <option value="deepseek">DeepSeek</option>
-                    <option value="mimo">Xiaomi MiMo</option>
-                    <option value="dashscope">DashScope</option>
-                    <option value="openai">OpenAI</option>
-                    <option value="custom">Custom</option>
-                  </select>
-                </label>
-                <label>
-                  展示名称
-                  <input v-model="form.displayName" type="text" placeholder="Provider 展示名称" />
-                </label>
-                <label class="wide-field">
-                  备注
-                  <input v-model="form.remark" type="text" placeholder="可选运维备注" />
-                </label>
-                <label class="wide-field">
-                  官网
-                  <input v-model="form.websiteUrl" type="url" placeholder="https://..." />
-                </label>
-              </div>
-            </section>
-
-            <section class="config-section">
-              <h4>连接信息</h4>
-              <div class="form-grid">
-                <label>
-                  Base URL
-                  <input v-model="form.baseUrl" type="url" placeholder="https://api.example.com/v1" />
-                </label>
-                <label>
-                  API key 已脱敏
-                  <input
-                    v-model="form.apiKey"
-                    type="password"
-                    :placeholder="selectedProvider?.apiKeyConfigured ? '留空则保留当前加密 key' : '输入 API key'"
-                  />
-                </label>
-              </div>
-            </section>
-
-            <section class="config-section">
-              <h4>模型配置</h4>
-              <div class="form-grid two-col">
-                <label>
-                  Chat model
-                  <input v-model="form.chatModel" type="text" placeholder="chat model id" />
-                </label>
-                <label>
-                  Embedding model
-                  <input v-model="form.embeddingModel" type="text" placeholder="embedding model id" />
-                </label>
-              </div>
-            </section>
-
-            <section class="config-section">
-              <h4>治理策略</h4>
-              <div class="form-grid two-col">
-                <label>
-                  预算
-                  <input v-model="form.budget" type="text" placeholder="后端控制" />
-                </label>
-                <label>
-                  优先级
-                  <select v-model="form.priority">
-                    <option>高</option>
-                    <option>普通</option>
-                    <option>低</option>
-                    <option>暂停</option>
-                  </select>
-                </label>
-                <label class="checkbox-row">
-                  <input v-model="form.enabled" type="checkbox" />
-                  已启用
-                </label>
-                <label class="checkbox-row">
-                  <input v-model="form.defaultProvider" type="checkbox" />
-                  默认 Provider
-                </label>
-              </div>
-            </section>
+      <main class="config-canvas provider-config-canvas" data-test="provider-form">
+        <div class="canvas-heading">
+          <div>
+            <span class="surface-eyebrow">Configuration Canvas</span>
+            <h1>{{ form.displayName || 'Provider 配置' }}</h1>
+            <p>当前画布仅编辑 Provider 配置，不改变后端路由和业务请求流程。</p>
           </div>
+          <MobbinStatusPill :status="form.enabled ? 'ENABLED' : 'DISABLED'">
+            {{ form.enabled ? 'ENABLED' : 'DISABLED' }}
+          </MobbinStatusPill>
+        </div>
 
-          <div class="action-row">
-            <button class="mobbin-primary-button" type="button" :disabled="isSaving" data-test="save-provider" @click="saveProvider">
-              <CheckCircle2 :size="16" aria-hidden="true" />
-              {{ isSaving ? '正在保存' : isEditing ? '更新 Provider' : '创建 Provider' }}
-            </button>
-            <button
-              v-if="selectedProvider"
-              class="mobbin-secondary-button"
-              type="button"
-              :disabled="testingProviderId === selectedProvider.id"
-              data-test="test-provider"
-              @click="testConnection(selectedProvider)"
-            >
-              <Activity :size="16" aria-hidden="true" />
-              {{ testingProviderId === selectedProvider.id ? '正在测试调用' : '测试调用' }}
-            </button>
-            <button
-              v-if="selectedProvider && !selectedProvider.defaultProvider"
-              class="mobbin-secondary-button"
-              type="button"
-              data-test="set-default-provider"
-              @click="markDefault(selectedProvider)"
-            >
-              <Star :size="16" aria-hidden="true" />
-              设为默认
-            </button>
+        <section class="config-section">
+          <h2>基础信息</h2>
+          <div class="form-grid two-col">
+            <label>
+              Provider 类型
+              <select v-model="form.providerCode" :disabled="isEditing" @change="applyPreset(form.providerCode)">
+                <option value="deepseek">DeepSeek</option>
+                <option value="mimo">Xiaomi MiMo</option>
+                <option value="dashscope">DashScope</option>
+                <option value="openai">OpenAI</option>
+                <option value="custom">Custom</option>
+              </select>
+            </label>
+            <label>
+              展示名称
+              <input v-model="form.displayName" type="text" placeholder="Provider 展示名称" />
+            </label>
+            <label class="wide-field">
+              备注
+              <input v-model="form.remark" type="text" placeholder="可选运维备注" />
+            </label>
+            <label class="wide-field">
+              官网
+              <input v-model="form.websiteUrl" type="url" placeholder="https://..." />
+            </label>
           </div>
-        </MobbinGlassCard>
+        </section>
 
-        <MobbinGlassCard eyebrow="Provider Strategy" title="运行策略与监控">
-          <template #icon>
-            <GitBranch :size="20" aria-hidden="true" />
-          </template>
-          <MobbinTimeline :items="providerMonitorItems" />
-        </MobbinGlassCard>
+        <section class="config-section">
+          <h2>连接信息</h2>
+          <div class="form-grid">
+            <label>
+              Base URL
+              <input v-model="form.baseUrl" type="url" placeholder="https://api.example.com/v1" />
+            </label>
+            <label>
+              API key 已脱敏
+              <input
+                v-model="form.apiKey"
+                type="password"
+                :placeholder="selectedProvider?.apiKeyConfigured ? '留空则保留当前加密 key' : '输入 API key'"
+              />
+            </label>
+          </div>
+        </section>
+
+        <section class="config-section">
+          <h2>模型配置</h2>
+          <div class="form-grid two-col">
+            <label>
+              Chat model
+              <input v-model="form.chatModel" type="text" placeholder="chat model id" />
+            </label>
+            <label>
+              Embedding model
+              <input v-model="form.embeddingModel" type="text" placeholder="embedding model id" />
+            </label>
+          </div>
+        </section>
+      </main>
+
+      <aside class="routing-panel provider-routing-panel" aria-label="Provider 路由策略">
+        <div class="panel-heading compact">
+          <div>
+            <span class="surface-eyebrow">Routing Inspector</span>
+            <h2>编排策略</h2>
+          </div>
+          <GitBranch :size="20" aria-hidden="true" />
+        </div>
+
+        <section class="routing-section">
+          <h3>启用状态</h3>
+          <label class="checkbox-row">
+            <input v-model="form.enabled" type="checkbox" />
+            已启用
+          </label>
+          <label class="checkbox-row">
+            <input v-model="form.defaultProvider" type="checkbox" />
+            默认 Provider
+          </label>
+        </section>
+
+        <section class="routing-section">
+          <h3>治理策略</h3>
+          <div class="form-grid">
+            <label>
+              预算
+              <input v-model="form.budget" type="text" placeholder="后端控制" />
+            </label>
+            <label>
+              优先级
+              <select v-model="form.priority">
+                <option>高</option>
+                <option>普通</option>
+                <option>低</option>
+                <option>暂停</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="routing-section policy-stack">
+          <h3>Fallback / Timeout / Retry</h3>
+          <article>
+            <span>Fallback</span>
+            <strong>{{ backupProvider ? 'Ready' : 'Waiting' }}</strong>
+            <p>{{ backupProvider?.displayName ?? '需要至少一个备用 Provider' }}</p>
+          </article>
+          <article>
+            <span>Timeout</span>
+            <strong>Backend governed</strong>
+            <p>前端仅展示策略，不修改运行时契约。</p>
+          </article>
+          <article>
+            <span>Retry</span>
+            <strong>{{ form.priority }}</strong>
+            <p>优先级用于运维识别，实际重试仍由后端控制。</p>
+          </article>
+        </section>
+
+        <div class="action-row routing-actions">
+          <button class="mobbin-primary-button" type="button" :disabled="isSaving" data-test="save-provider" @click="saveProvider">
+            <CheckCircle2 :size="16" aria-hidden="true" />
+            {{ isSaving ? '正在保存' : isEditing ? '更新 Provider' : '创建 Provider' }}
+          </button>
+          <button
+            v-if="selectedProvider"
+            class="mobbin-secondary-button"
+            type="button"
+            :disabled="testingProviderId === selectedProvider.id"
+            data-test="test-provider"
+            @click="testConnection(selectedProvider)"
+          >
+            <Activity :size="16" aria-hidden="true" />
+            {{ testingProviderId === selectedProvider.id ? '正在测试调用' : '测试连接' }}
+          </button>
+          <button
+            v-if="selectedProvider && !selectedProvider.defaultProvider"
+            class="mobbin-secondary-button"
+            type="button"
+            data-test="set-default-provider"
+            @click="markDefault(selectedProvider)"
+          >
+            <Star :size="16" aria-hidden="true" />
+            设为默认
+          </button>
+        </div>
+      </aside>
+    </section>
+
+    <section class="provider-monitor-strip">
+      <div class="panel-heading compact">
+        <div>
+          <span class="surface-eyebrow">Provider Monitor</span>
+          <h2>运行监控</h2>
+        </div>
+        <Activity :size="18" aria-hidden="true" />
       </div>
+      <MobbinTimeline :items="providerMonitorItems" />
     </section>
   </MobbinPageShell>
 </template>
 
 <style scoped>
+.provider-control-bar {
+  grid-template-columns: repeat(5, minmax(140px, 1fr)) auto;
+}
+
+.provider-orchestration-layout {
+  grid-template-columns: minmax(260px, 300px) minmax(0, 1fr) minmax(300px, 340px);
+}
+
 .mobbin-primary-button,
 .mobbin-secondary-button {
   display: inline-flex;
@@ -530,25 +571,39 @@ async function testConnection(provider: ModelProviderSummary) {
   border: 1px solid #c7d2fe;
 }
 
-.provider-strategy-preview {
-  display: grid;
-  gap: 10px;
+.panel-heading,
+.canvas-heading {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
-.provider-strategy-preview svg {
-  color: #4f46e5;
-}
-
-.provider-strategy-preview strong {
+.panel-heading h1,
+.panel-heading h2,
+.canvas-heading h1,
+.config-section h2,
+.routing-section h3,
+.provider-monitor-strip h2 {
+  margin: 4px 0 0;
   color: #0f172a;
-  font-size: 22px;
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: 0;
   overflow-wrap: anywhere;
 }
 
-.provider-strategy-preview p,
+.panel-heading.compact h2,
+.routing-section h3,
+.config-section h2 {
+  font-size: 16px;
+}
+
+.canvas-heading p,
 .marketplace-card p,
 .connection-main small,
 .connection-meta span,
+.policy-stack p,
 .mobbin-empty {
   color: #64748b;
   font-size: 13px;
@@ -556,68 +611,24 @@ async function testConnection(provider: ModelProviderSummary) {
   overflow-wrap: anywhere;
 }
 
-.provider-strategy-preview div {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.provider-hub-layout {
+.marketplace-copy,
+.connection-main span:last-child {
   display: grid;
-  grid-template-columns: minmax(330px, 0.9fr) minmax(0, 1.35fr);
-  gap: 16px;
-  align-items: start;
-}
-
-.provider-market-column,
-.provider-config-column {
-  display: grid;
-  gap: 16px;
+  gap: 5px;
   min-width: 0;
-}
-
-.marketplace-grid,
-.connection-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.marketplace-card {
-  display: grid;
-  gap: 9px;
-  min-width: 0;
-  min-height: 176px;
-  padding: 15px;
-  color: inherit;
-  text-align: left;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  cursor: pointer;
-  transition:
-    transform 160ms ease,
-    box-shadow 160ms ease,
-    border-color 160ms ease;
-}
-
-.marketplace-card:hover,
-.connection-card:hover {
-  border-color: #c7d2fe;
-  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08);
-  transform: translateY(-1px);
 }
 
 .provider-logo {
   display: grid;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   color: #ffffff;
   font-size: 12px;
   font-weight: 900;
   background: linear-gradient(135deg, #0f172a, #4f46e5);
-  border-radius: 14px;
+  border-radius: 15px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.14);
 }
 
 .provider-logo.small {
@@ -627,27 +638,54 @@ async function testConnection(provider: ModelProviderSummary) {
 }
 
 .marketplace-card strong,
-.connection-main strong {
+.connection-main strong,
+.policy-stack strong {
   color: #0f172a;
-  font-size: 15px;
+  font-size: 14px;
   overflow-wrap: anywhere;
 }
 
-.connection-card {
+.registered-providers,
+.config-section,
+.routing-section,
+.provider-monitor-strip {
   display: grid;
   gap: 12px;
   min-width: 0;
   padding: 14px;
-  background: #ffffff;
+  background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  transition:
-    transform 160ms ease,
-    box-shadow 160ms ease,
-    border-color 160ms ease;
+  border-radius: 18px;
 }
 
-.connection-card.selected {
+.provider-monitor-strip {
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.86)),
+    #ffffff;
+  border-color: rgba(226, 232, 240, 0.9);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.07);
+}
+
+.connection-list {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.connection-list li {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+.connection-list li.selected {
   background:
     linear-gradient(#f8fbff, #f8fbff) padding-box,
     linear-gradient(135deg, #4f46e5, #14b8a6) border-box;
@@ -668,57 +706,11 @@ async function testConnection(provider: ModelProviderSummary) {
   cursor: pointer;
 }
 
-.connection-main span:last-child {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-}
-
 .connection-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
   align-items: center;
-}
-
-.connection-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.connection-actions button {
-  min-height: 32px;
-  padding: 7px 10px;
-  color: #4f46e5;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 900;
-  background: #eef2ff;
-  border: 1px solid #c7d2fe;
-  border-radius: 999px;
-  cursor: pointer;
-}
-
-.config-section-grid {
-  display: grid;
-  gap: 14px;
-}
-
-.config-section {
-  display: grid;
-  gap: 12px;
-  padding: 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-}
-
-.config-section h4 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 15px;
-  letter-spacing: 0;
 }
 
 .form-grid {
@@ -772,10 +764,27 @@ async function testConnection(provider: ModelProviderSummary) {
   padding: 0;
 }
 
-.action-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+.policy-stack article {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.policy-stack span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.routing-actions {
+  align-items: stretch;
+}
+
+.routing-actions > button {
+  width: 100%;
 }
 
 .mobbin-empty,
@@ -800,17 +809,20 @@ async function testConnection(provider: ModelProviderSummary) {
 }
 
 @media (max-width: 1180px) {
-  .provider-hub-layout,
-  .marketplace-grid,
-  .connection-grid {
+  .provider-control-bar,
+  .provider-orchestration-layout,
+  .form-grid.two-col {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 680px) {
-  .form-grid.two-col,
+  .panel-heading,
+  .canvas-heading,
   .connection-main {
+    display: grid;
     grid-template-columns: 1fr;
+    justify-content: stretch;
   }
 
   .mobbin-primary-button,

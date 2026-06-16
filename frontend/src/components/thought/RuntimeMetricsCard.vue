@@ -7,11 +7,11 @@ defineProps<{
 }>()
 
 const metricItems = [
-  { key: 'latency', label: 'Latency', icon: Gauge },
-  { key: 'totalTokens', label: 'Total Tokens', icon: WalletCards },
-  { key: 'modelCalls', label: 'Model Calls', icon: GitBranch },
+  { key: 'latency', label: '响应延迟', icon: Gauge },
+  { key: 'totalTokens', label: 'Token 总量', icon: WalletCards },
+  { key: 'modelCalls', label: '模型调用', icon: GitBranch },
   { key: 'fallback', label: 'Fallback', icon: RotateCcw },
-  { key: 'safety', label: 'Safety', icon: ShieldCheck },
+  { key: 'safety', label: 'Safety 检查', icon: ShieldCheck },
 ] as const
 </script>
 
@@ -20,7 +20,7 @@ const metricItems = [
     <div class="thought-card-heading">
       <div>
         <span class="thought-eyebrow">运行指标</span>
-        <h3>Runtime metrics</h3>
+        <h3>运行指标</h3>
       </div>
     </div>
 

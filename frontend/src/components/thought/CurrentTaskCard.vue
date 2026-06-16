@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import { Activity, Clock3, Cpu, Fingerprint, Layers3 } from 'lucide-vue-next'
-import type { CurrentThoughtTask } from '../../types/thought'
+import type { CurrentThoughtTask, ThoughtStatus } from '../../types/thought'
 
 defineProps<{
   task: CurrentThoughtTask
 }>()
+
+function formatThoughtStatus(status: ThoughtStatus) {
+  const labels: Record<ThoughtStatus, string> = {
+    waiting: '等待中',
+    running: '执行中',
+    done: '已完成',
+    warning: '需关注',
+    failed: '失败',
+  }
+  return labels[status]
+}
 </script>
 
 <template>
@@ -14,7 +25,7 @@ defineProps<{
         <span class="thought-eyebrow">当前任务</span>
         <h3>{{ task.title }}</h3>
       </div>
-      <em :class="['thought-status', task.status]">{{ task.status }}</em>
+      <em :class="['thought-status', task.status]">{{ formatThoughtStatus(task.status) }}</em>
     </div>
 
     <dl class="task-detail-list">
@@ -41,7 +52,7 @@ defineProps<{
       <div>
         <Activity :size="15" aria-hidden="true" />
         <dt>状态</dt>
-        <dd>{{ task.status === 'running' ? '执行中' : task.status }}</dd>
+        <dd>{{ formatThoughtStatus(task.status) }}</dd>
       </div>
     </dl>
   </section>

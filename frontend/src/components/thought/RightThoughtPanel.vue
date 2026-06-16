@@ -41,93 +41,93 @@ const routeFallback = computed(() => {
     return {
       currentTask: {
         title: 'AI 审核线索',
-        taskType: 'Teacher decision',
+        taskType: '教师决策',
         model: 'Critic / Safety / Citation',
         traceId: 'review-context',
-        startedAt: 'Review Inbox',
+        startedAt: '审核队列',
         status: 'running' as const,
       },
       agentSteps: [
-        { name: 'Citation', status: 'running' as const, duration: '-', summary: '检查资源是否具备可追溯引用。' },
+        { name: 'Citation', status: 'running' as const, duration: '-', summary: '检查资源是否具备可追溯 Citation。' },
         { name: 'Critic', status: 'waiting' as const, duration: '-', summary: '等待教师结合摘要做最终判断。' },
-        { name: 'Safety', status: 'waiting' as const, duration: '-', summary: '关注安全、事实性和学习者适配。' },
+        { name: 'Safety', status: 'waiting' as const, duration: '-', summary: '关注 Safety、事实性和学习者适配。' },
       ],
       ragSources: {
         knowledgeBase: '审核证据',
         chunkCount: 1,
         documents: [{ name: 'Citation / Critic / Safety', excerpt: '选择审核项后，页面主区域会展示后端返回的资源摘要和技术字段。' }],
       },
-      metrics: { latency: '-', totalTokens: '-', modelCalls: '-', fallback: 'Teacher decision', safety: 'Review required' },
+      metrics: { latency: '-', totalTokens: '-', modelCalls: '-', fallback: '教师决策', safety: '需要审核' },
     }
   }
 
   if (route.name === 'admin') {
     return {
       currentTask: {
-        title: 'Runtime Signals',
-        taskType: 'Operations',
-        model: 'Health / Analytics / Alerts',
+        title: '运行信号',
+        taskType: '运维监控',
+        model: '健康检查 / 分析概览 / 告警',
         traceId: 'runtime-context',
-        startedAt: 'Command Center',
+        startedAt: '控制中心',
         status: 'running' as const,
       },
       agentSteps: [
-        { name: 'Health', status: 'running' as const, duration: '-', summary: '跟踪应用、数据库、Redis、MinIO、模型和向量索引。' },
-        { name: 'Token budget', status: 'waiting' as const, duration: '-', summary: 'Token 用量来自 analytics overview。' },
-        { name: 'Alerts', status: 'waiting' as const, duration: '-', summary: '持久化告警可在运维页确认。' },
+        { name: '健康检查', status: 'running' as const, duration: '-', summary: '跟踪应用、数据库、Redis、MinIO、Model 和向量索引。' },
+        { name: 'Token 预算', status: 'waiting' as const, duration: '-', summary: 'Token 用量来自分析概览。' },
+        { name: '告警', status: 'waiting' as const, duration: '-', summary: '持久化告警可在运维页确认。' },
       ],
       ragSources: {
-        knowledgeBase: 'Runtime Trace',
+        knowledgeBase: '运行 Trace',
         chunkCount: 1,
-        documents: [{ name: 'Health / Alerts / Trace', excerpt: '运维页保留健康检查、分析概览和告警确认 API。' }],
+        documents: [{ name: '健康检查 / 告警 / Trace', excerpt: '运维页保留健康检查、分析概览和告警确认 API。' }],
       },
-      metrics: { latency: 'health', totalTokens: 'analytics', modelCalls: 'overview', fallback: 'alerts', safety: 'ops' },
+      metrics: { latency: '健康检查', totalTokens: '分析概览', modelCalls: '概览', fallback: '告警', safety: '运维' },
     }
   }
 
   if (route.name === 'admin-model-providers') {
     return {
       currentTask: {
-        title: 'Provider Strategy',
-        taskType: 'Model Provider Hub',
-        model: 'Default / Fallback / Test',
+        title: 'Provider 策略',
+        taskType: '模型供应商中心',
+        model: '默认 Provider / Fallback / 连接测试',
         traceId: 'provider-context',
-        startedAt: 'Provider Hub',
+        startedAt: 'Provider 中心',
         status: 'running' as const,
       },
       agentSteps: [
-        { name: 'Default provider', status: 'running' as const, duration: '-', summary: '默认 Provider 决定主模型调用通道。' },
+        { name: '默认 Provider', status: 'running' as const, duration: '-', summary: '默认 Provider 决定主 Model 调用通道。' },
         { name: 'Fallback', status: 'waiting' as const, duration: '-', summary: '备用 Provider 用于支撑后端 Fallback 策略。' },
-        { name: 'Test result', status: 'waiting' as const, duration: '-', summary: '测试连接不会回显已有 API key 明文。' },
+        { name: '连接测试', status: 'waiting' as const, duration: '-', summary: '连接测试不会回显已有 API key 明文。' },
       ],
       ragSources: {
-        knowledgeBase: 'Provider Governance',
+        knowledgeBase: 'Provider 治理',
         chunkCount: 1,
-        documents: [{ name: 'Default / Fallback / Token usage', excerpt: 'Provider 页面只改配置展示，不改变保存、测试和设默认 API。' }],
+        documents: [{ name: '默认 Provider / Fallback / Token 用量', excerpt: 'Provider 页面只改配置展示，不改变保存、测试和设为默认 Provider 的 API。' }],
       },
-      metrics: { latency: 'test', totalTokens: 'ops', modelCalls: 'provider', fallback: 'configured', safety: 'masked key' },
+      metrics: { latency: '连接测试', totalTokens: '运维', modelCalls: 'Provider', fallback: '已配置', safety: '密钥已脱敏' },
     }
   }
 
   return {
     currentTask: {
       title: '学习思考流',
-      taskType: 'RAG / Agent timeline',
-      model: 'Learning OS',
+      taskType: 'RAG / Agent 执行流程',
+      model: '学习系统',
       traceId: 'student-context',
-      startedAt: 'Learning workbench',
+      startedAt: '学习工作台',
       status: 'running' as const,
     },
     agentSteps: [
-      { name: 'RAG', status: 'running' as const, duration: '-', summary: '围绕课程资料检索、引用和回答。' },
-      { name: 'Agent timeline', status: 'waiting' as const, duration: '-', summary: '展示画像、路径、资源生成和测评闭环。' },
+      { name: 'RAG', status: 'running' as const, duration: '-', summary: '围绕课程资料检索、Citation 和回答。' },
+      { name: 'Agent 执行流程', status: 'waiting' as const, duration: '-', summary: '展示画像、路径、资源生成和测评闭环。' },
     ],
     ragSources: {
       knowledgeBase: '学习工作台',
       chunkCount: 1,
-      documents: [{ name: 'RAG / Agent timeline', excerpt: '学习工作台会在主区域展示真实引用来源和生成链路。' }],
+      documents: [{ name: 'RAG / Agent 执行流程', excerpt: '学习工作台会在主区域展示真实 Citation 来源和生成链路。' }],
     },
-    metrics: { latency: '-', totalTokens: '-', modelCalls: '-', fallback: 'RAG fallback', safety: 'resource review' },
+    metrics: { latency: '-', totalTokens: '-', modelCalls: '-', fallback: 'RAG Fallback', safety: '资源审核' },
   }
 })
 
@@ -142,11 +142,22 @@ const panelData = computed(() => {
 })
 
 const panelCopy = computed(() => {
-  if (route.name === 'teacher') return { eyebrow: 'Review Signals', title: 'AI 审核线索', aria: 'AI 审核线索' }
-  if (route.name === 'admin') return { eyebrow: 'Runtime Signals', title: '运行信号', aria: 'Runtime Signals' }
-  if (route.name === 'admin-model-providers') return { eyebrow: 'Provider Strategy', title: 'Provider 策略', aria: 'Provider Strategy' }
-  return { eyebrow: 'Thought Stream', title: '学习思考流', aria: '学习思考流' }
+  if (route.name === 'teacher') return { eyebrow: '审核线索', title: 'AI 审核线索', aria: 'AI 审核线索' }
+  if (route.name === 'admin') return { eyebrow: '运行信号', title: '运行信号', aria: '运行信号' }
+  if (route.name === 'admin-model-providers') return { eyebrow: 'Provider 策略', title: 'Provider 策略', aria: 'Provider 策略' }
+  return { eyebrow: '思考流', title: '学习思考流', aria: '学习思考流' }
 })
+
+function formatThoughtStatus(status: CurrentThoughtTask['status']) {
+  const labels: Record<CurrentThoughtTask['status'], string> = {
+    waiting: '等待中',
+    running: '执行中',
+    done: '已完成',
+    warning: '需关注',
+    failed: '失败',
+  }
+  return labels[status]
+}
 
 function toggleCollapsed() {
   const nextCollapsed = !collapsed.value
@@ -232,7 +243,7 @@ function showPanel() {
     <div v-else class="collapsed-content" :aria-label="`${panelCopy.title}已折叠`">
       <Bot :size="20" aria-hidden="true" />
       <span>{{ panelCopy.title }}</span>
-      <em :class="['collapsed-status', panelData.currentTask.status]">{{ panelData.currentTask.status }}</em>
+      <em :class="['collapsed-status', panelData.currentTask.status]">{{ formatThoughtStatus(panelData.currentTask.status) }}</em>
     </div>
   </aside>
 

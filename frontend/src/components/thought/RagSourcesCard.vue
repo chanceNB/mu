@@ -12,7 +12,7 @@ defineProps<{
     <div class="thought-card-heading">
       <div>
         <span class="thought-eyebrow">检索来源 RAG</span>
-        <h3>Grounding evidence</h3>
+        <h3>引用依据</h3>
       </div>
       <Database :size="18" aria-hidden="true" />
     </div>
@@ -23,7 +23,7 @@ defineProps<{
         <dd>{{ sources.knowledgeBase }}</dd>
       </div>
       <div>
-        <dt>命中 chunk 数</dt>
+        <dt>命中片段数</dt>
         <dd>{{ sources.chunkCount }}</dd>
       </div>
     </dl>
@@ -36,8 +36,8 @@ defineProps<{
           <span>
             <Layers3 :size="12" aria-hidden="true" />
             {{ document.sectionTitle ?? '未标注章节' }}
-            <template v-if="document.pageNum"> / p.{{ document.pageNum }}</template>
-            <template v-if="document.score !== undefined"> / score {{ document.score }}</template>
+            <template v-if="document.pageNum"> / 第 {{ document.pageNum }} 页</template>
+            <template v-if="document.score !== undefined"> / 相关度 {{ document.score }}</template>
           </span>
           <p v-if="document.excerpt">{{ document.excerpt }}</p>
         </div>

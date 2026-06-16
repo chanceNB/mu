@@ -13,13 +13,12 @@ import {
 import { decideResourceReview, listResourceReviews } from '../../api/reviews'
 import MobbinActionDock from '../../components/mobbin/MobbinActionDock.vue'
 import MobbinGlassCard from '../../components/mobbin/MobbinGlassCard.vue'
-import MobbinHero from '../../components/mobbin/MobbinHero.vue'
 import MobbinMetricStrip, { type MobbinMetricItem } from '../../components/mobbin/MobbinMetricStrip.vue'
 import MobbinPageShell from '../../components/mobbin/MobbinPageShell.vue'
-import MobbinPreviewFrame from '../../components/mobbin/MobbinPreviewFrame.vue'
 import MobbinStatusPill from '../../components/mobbin/MobbinStatusPill.vue'
 import MobbinTimeline, { type MobbinTimelineItem } from '../../components/mobbin/MobbinTimeline.vue'
 import type { ResourceReviewSummary, ReviewDecisionPayload } from '../../types/api'
+import '../../components/mobbin/console-layout.css'
 
 const reviews = ref<ResourceReviewSummary[]>([])
 const isLoading = ref(false)
@@ -133,238 +132,189 @@ function displayStatus(status: string | null | undefined) {
 
 <template>
   <MobbinPageShell aria-label="教师审核中心" data-test="teacher-review-workspace">
-    <MobbinHero
-      eyebrow="Review Inbox"
-      title="教师审核中心"
-      description="在 AI 生成学习资源发布给学生之前，集中查看资源摘要、引用线索、Critic 评审和 Safety 证据，并提交教师最终决策。"
-    >
-      <template #actions>
-        <div class="teacher-hero-actions">
+    <section class="console-page">
+      <header class="console-header">
+        <div class="console-heading">
+          <span class="console-eyebrow">Review Console</span>
+          <h1>教师审核中心</h1>
+          <p>集中处理 AI 生成学习资源的审核队列、资源预览、教师反馈、证据链和技术信息。</p>
+        </div>
+        <div class="console-actions">
           <label class="filter-control">
-            <span>状态</span>
+            <span>状态筛选</span>
             <select v-model="reviewStatusFilter" data-test="review-status-filter" @change="loadReviews">
               <option value="PENDING_CRITIC">待审核</option>
               <option value="APPROVED">已通过</option>
-              <option value="REVISION_REQUESTED">需要修改</option>
+              <option value="REVISION_REQUESTED">要求修改</option>
             </select>
           </label>
-          <button class="mobbin-primary-button" type="button" :disabled="isLoading" @click="loadReviews">
+          <button class="console-button" type="button" :disabled="isLoading" @click="loadReviews">
             <RefreshCw :size="17" aria-hidden="true" />
             {{ isLoading ? '正在刷新' : '刷新队列' }}
           </button>
         </div>
-      </template>
-      <template #preview>
-        <MobbinPreviewFrame label="Decision Preview">
-          <div class="hero-preview-card">
-            <ClipboardCheck :size="22" aria-hidden="true" />
-            <strong>{{ selectedReview ? resourceLabel(selectedReview) : '等待选择审核项' }}</strong>
-            <p>{{ selectedReview?.summary ?? '审核队列会按当前状态筛选，教师选择资源后即可查看证据并提交决策。' }}</p>
-            <MobbinStatusPill :status="selectedReview?.status ?? 'IDLE'">
-              {{ displayStatus(selectedReview?.status) }}
-            </MobbinStatusPill>
-          </div>
-        </MobbinPreviewFrame>
-      </template>
-    </MobbinHero>
+      </header>
 
-    <p class="visually-hidden">教师审核队列 当前决策 暂无待审核资源</p>
+      <p class="visually-hidden">教师审核队列 当前决策 暂无待审核资源</p>
+      <p v-if="errorMessage" class="console-error" role="status">{{ errorMessage }}</p>
 
-    <MobbinMetricStrip :items="metrics" />
+      <MobbinMetricStrip :items="metrics" />
 
-    <section class="review-inbox-layout">
-      <MobbinGlassCard eyebrow="Inbox" title="审核收件箱" elevated class="review-inbox-card">
-        <template #icon>
-          <ShieldCheck :size="20" aria-hidden="true" />
-        </template>
-        <p v-if="errorMessage" class="mobbin-error" role="status">{{ errorMessage }}</p>
-        <p v-if="!isLoading && reviews.length === 0" class="mobbin-empty">没有匹配当前状态的资源。</p>
-        <p v-else-if="isLoading && reviews.length === 0" class="mobbin-empty">正在加载审核队列...</p>
-
-        <ul v-else class="review-inbox-list">
-          <li
-            v-for="review in reviews"
-            :key="review.reviewId"
-            :class="{ selected: review.reviewId === selectedReview?.reviewId }"
-          >
-            <button
-              type="button"
-              class="review-inbox-item"
-              :data-test="`select-review-${review.reviewId}`"
-              @click="selectReview(review)"
-            >
-              <span class="review-icon"><ClipboardCheck :size="16" aria-hidden="true" /></span>
-              <span class="review-copy">
-                <strong>{{ resourceLabel(review) }}</strong>
-                <small>{{ review.resourceType ?? 'RESOURCE' }} / {{ review.generationTaskId }}</small>
-                <em>{{ review.summary }}</em>
-              </span>
-              <MobbinStatusPill :status="review.status">{{ displayStatus(review.status) }}</MobbinStatusPill>
-            </button>
-          </li>
-        </ul>
-      </MobbinGlassCard>
-
-      <div class="review-preview-stack">
-        <MobbinGlassCard eyebrow="Resource Preview" :title="selectedReview ? resourceLabel(selectedReview) : '暂无待审核资源'" elevated>
+      <section class="console-grid">
+        <MobbinGlassCard eyebrow="Review Queue" title="审核队列" elevated class="console-span-4">
           <template #icon>
-            <FileSearch :size="20" aria-hidden="true" />
+            <span class="console-card-icon"><ShieldCheck :size="18" aria-hidden="true" /></span>
           </template>
+          <p v-if="!isLoading && reviews.length === 0" class="console-empty">没有匹配当前状态的资源。</p>
+          <p v-else-if="isLoading && reviews.length === 0" class="console-empty">正在加载审核队列...</p>
+          <ul v-else class="console-list review-list">
+            <li v-for="review in reviews" :key="review.reviewId">
+              <button
+                type="button"
+                :class="['console-list-item', { selected: review.reviewId === selectedReview?.reviewId }]"
+                :data-test="'select-review-' + review.reviewId"
+                @click="selectReview(review)"
+              >
+                <span class="item-topline">
+                  <strong>{{ resourceLabel(review) }}</strong>
+                  <MobbinStatusPill :status="review.status">{{ displayStatus(review.status) }}</MobbinStatusPill>
+                </span>
+                <span class="item-meta">{{ review.resourceType ?? 'RESOURCE' }} / {{ review.generationTaskId }}</span>
+                <span class="item-summary">{{ review.summary || '等待 Critic 摘要。' }}</span>
+              </button>
+            </li>
+          </ul>
+        </MobbinGlassCard>
 
-          <section v-if="selectedReview" class="resource-preview" data-test="review-detail">
-            <div class="resource-title-row">
+        <MobbinGlassCard eyebrow="Resource Preview" :title="selectedReview ? resourceLabel(selectedReview) : '当前资源预览'" elevated class="console-span-8" data-test="review-detail">
+          <template #icon>
+            <span class="console-card-icon"><FileSearch :size="18" aria-hidden="true" /></span>
+          </template>
+          <section v-if="selectedReview" class="review-document">
+            <div class="document-title-row">
               <div>
-                <span>资源标题</span>
-                <strong>{{ resourceLabel(selectedReview) }}</strong>
+                <span>资源正文摘要</span>
+                <h2>{{ resourceLabel(selectedReview) }}</h2>
               </div>
               <MobbinStatusPill :status="selectedReview.status">{{ displayStatus(selectedReview.status) }}</MobbinStatusPill>
             </div>
-
-            <div class="resource-summary-panel">
-              <p class="section-label">资源内容摘要</p>
-              <p>{{ selectedReview.summary || '后端未返回摘要内容。' }}</p>
+            <div class="document-reader">
+              <p>{{ selectedReview.summary || '后端暂未返回摘要内容。' }}</p>
+              <p>审阅重点：确认内容是否匹配学习路径节点、是否可追溯引用、是否适合学生当前薄弱点，以及是否需要补充生成理由。</p>
             </div>
-
-            <div class="review-focus-grid">
-              <article>
-                <span>资源类型</span>
-                <strong>{{ selectedReview.resourceType ?? 'RESOURCE' }}</strong>
-              </article>
-              <article>
-                <span>Critic 状态</span>
-                <strong>{{ selectedReview.resourceReviewStatus ?? selectedReview.status }}</strong>
-              </article>
-              <article>
-                <span>引用情况</span>
-                <strong>需教师确认</strong>
-              </article>
-              <article>
-                <span>生成理由</span>
-                <strong>见审核摘要</strong>
-              </article>
-            </div>
-
-            <details class="technical-details">
-              <summary>查看技术字段</summary>
-              <dl>
-                <div>
-                  <dt>reviewId</dt>
-                  <dd>{{ selectedReview.reviewId }}</dd>
-                </div>
-                <div>
-                  <dt>resourceId</dt>
-                  <dd>{{ selectedReview.resourceId }}</dd>
-                </div>
-                <div>
-                  <dt>generationTaskId</dt>
-                  <dd>{{ selectedReview.generationTaskId }}</dd>
-                </div>
-              </dl>
-            </details>
-
-            <label class="mobbin-field">
-              <span>教师反馈</span>
-              <textarea
-                v-model="feedbackDraft"
-                data-test="review-feedback-input"
-                rows="4"
-                placeholder="简要说明该资源为什么可以通过，或需要修改什么。"
-              ></textarea>
-            </label>
-
-            <MobbinActionDock>
-              <button
-                class="mobbin-primary-button"
-                type="button"
-                data-test="approve-selected-review"
-                :disabled="decidingReviewId === selectedReview.reviewId"
-                @click="decide(selectedReview, 'APPROVED')"
-              >
-                <CheckCircle2 :size="15" aria-hidden="true" />
-                通过
-              </button>
-              <button
-                class="mobbin-warning-button"
-                type="button"
-                data-test="request-revision"
-                :disabled="decidingReviewId === selectedReview.reviewId"
-                @click="decide(selectedReview, 'REVISION_REQUESTED')"
-              >
-                <XCircle :size="15" aria-hidden="true" />
-                要求修改
-              </button>
-              <button
-                class="mobbin-danger-button"
-                type="button"
-                data-test="reject-review"
-                disabled
-                title="当前后端契约仅支持通过或要求修改。"
-              >
-                <ShieldAlert :size="15" aria-hidden="true" />
-                拒绝
-              </button>
-            </MobbinActionDock>
           </section>
-
-          <section v-else class="resource-preview" data-test="review-detail">
-            <p class="mobbin-empty">暂无待审核资源。选择审核项后，资源详情和决策按钮会显示在这里。</p>
-            <MobbinActionDock>
-              <button class="mobbin-primary-button" type="button" disabled>
-                <CheckCircle2 :size="15" aria-hidden="true" />
-                通过
-              </button>
-              <button class="mobbin-warning-button" type="button" disabled>
-                <XCircle :size="15" aria-hidden="true" />
-                要求修改
-              </button>
-              <button
-                class="mobbin-danger-button"
-                type="button"
-                data-test="reject-review"
-                disabled
-                title="当前后端契约仅支持通过或要求修改。"
-              >
-                <ShieldAlert :size="15" aria-hidden="true" />
-                拒绝
-              </button>
-            </MobbinActionDock>
-          </section>
+          <p v-else class="console-empty">选择审核项后，资源详情和内容预览会显示在这里。</p>
         </MobbinGlassCard>
 
-        <section class="evidence-grid">
-          <MobbinGlassCard eyebrow="Citation / Safety" title="审核证据清单">
-            <template #icon>
-              <AlertTriangle :size="20" aria-hidden="true" />
-            </template>
-            <ul class="evidence-checklist" data-test="teacher-evidence-checklist">
-              <li><CheckCircle2 :size="16" aria-hidden="true" /> Citation 应可追溯到课程资料。</li>
-              <li><CheckCircle2 :size="16" aria-hidden="true" /> 内容应匹配学习路径节点和学生薄弱点。</li>
-              <li><CheckCircle2 :size="16" aria-hidden="true" /> 练习指导应避免不安全或误导性路径。</li>
-              <li><AlertTriangle :size="16" aria-hidden="true" /> 缺少来源、页码或生成理由时应要求修改。</li>
-            </ul>
-          </MobbinGlassCard>
+        <MobbinGlassCard eyebrow="Decision" title="教师决策" class="console-span-5">
+          <template #icon>
+            <span class="console-card-icon"><ClipboardCheck :size="18" aria-hidden="true" /></span>
+          </template>
+          <label class="mobbin-field">
+            <span>教师反馈</span>
+            <textarea
+              v-model="feedbackDraft"
+              data-test="review-feedback-input"
+              rows="5"
+              :disabled="!selectedReview"
+              placeholder="简要说明该资源为什么可以通过，或需要修改什么。"
+            ></textarea>
+          </label>
+          <MobbinActionDock>
+            <button
+              class="console-button"
+              type="button"
+              data-test="approve-selected-review"
+              :disabled="!selectedReview || decidingReviewId === selectedReview.reviewId"
+              @click="selectedReview && decide(selectedReview, 'APPROVED')"
+            >
+              <CheckCircle2 :size="15" aria-hidden="true" />
+              通过
+            </button>
+            <button
+              class="console-button secondary"
+              type="button"
+              data-test="request-revision"
+              :disabled="!selectedReview || decidingReviewId === selectedReview.reviewId"
+              @click="selectedReview && decide(selectedReview, 'REVISION_REQUESTED')"
+            >
+              <XCircle :size="15" aria-hidden="true" />
+              要求修改
+            </button>
+            <button
+              class="console-button danger"
+              type="button"
+              data-test="reject-review"
+              disabled
+              title="当前后端契约仅支持通过或要求修改。"
+            >
+              <ShieldAlert :size="15" aria-hidden="true" />
+              拒绝
+            </button>
+          </MobbinActionDock>
+        </MobbinGlassCard>
 
-          <MobbinGlassCard eyebrow="Critic Timeline" title="AI 审核线索">
-            <template #icon>
-              <ShieldCheck :size="20" aria-hidden="true" />
-            </template>
-            <MobbinTimeline :items="reviewEvidence" />
-          </MobbinGlassCard>
-        </section>
-      </div>
+        <MobbinGlassCard eyebrow="Evidence" title="证据链摘要" class="console-span-4">
+          <template #icon>
+            <span class="console-card-icon"><AlertTriangle :size="18" aria-hidden="true" /></span>
+          </template>
+          <ul class="evidence-checklist" data-test="teacher-evidence-checklist">
+            <li><CheckCircle2 :size="16" aria-hidden="true" /> Citation 可追溯到课程资料。</li>
+            <li><CheckCircle2 :size="16" aria-hidden="true" /> 内容匹配学习路径节点和学生薄弱点。</li>
+            <li><CheckCircle2 :size="16" aria-hidden="true" /> 指导避免不安全或误导性路径。</li>
+            <li><AlertTriangle :size="16" aria-hidden="true" /> 缺少来源或生成理由时要求修改。</li>
+          </ul>
+        </MobbinGlassCard>
+
+        <MobbinGlassCard eyebrow="Status" title="审核状态" class="console-span-3">
+          <template #icon>
+            <span class="console-card-icon"><ShieldCheck :size="18" aria-hidden="true" /></span>
+          </template>
+          <div class="status-stack">
+            <MobbinStatusPill :status="selectedReview?.status ?? 'IDLE'">{{ displayStatus(selectedReview?.status) }}</MobbinStatusPill>
+            <MobbinStatusPill :status="selectedReview ? 'CHECK' : 'IDLE'">Safety</MobbinStatusPill>
+            <MobbinStatusPill :status="selectedReview?.resourceReviewStatus ?? 'IDLE'">Critic</MobbinStatusPill>
+          </div>
+        </MobbinGlassCard>
+
+        <MobbinGlassCard eyebrow="AI Critic" title="AI Critic 反馈" class="console-span-6">
+          <template #icon>
+            <span class="console-card-icon"><AlertTriangle :size="18" aria-hidden="true" /></span>
+          </template>
+          <p class="critic-copy">{{ selectedReview?.summary ?? '选择资源后显示 Critic 摘要。' }}</p>
+          <MobbinTimeline :items="reviewEvidence" />
+        </MobbinGlassCard>
+
+        <MobbinGlassCard eyebrow="Technical" title="技术信息" class="console-span-6">
+          <template #icon>
+            <span class="console-card-icon"><FileSearch :size="18" aria-hidden="true" /></span>
+          </template>
+          <dl v-if="selectedReview" class="technical-grid">
+            <div>
+              <dt>reviewId</dt>
+              <dd>{{ selectedReview.reviewId }}</dd>
+            </div>
+            <div>
+              <dt>resourceId</dt>
+              <dd>{{ selectedReview.resourceId }}</dd>
+            </div>
+            <div>
+              <dt>generationTaskId</dt>
+              <dd>{{ selectedReview.generationTaskId }}</dd>
+            </div>
+            <div>
+              <dt>resourceType</dt>
+              <dd>{{ selectedReview.resourceType ?? 'RESOURCE' }}</dd>
+            </div>
+          </dl>
+          <p v-else class="console-empty">暂无选中资源。</p>
+        </MobbinGlassCard>
+      </section>
     </section>
   </MobbinPageShell>
 </template>
 
 <style scoped>
-.teacher-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: end;
-  justify-content: flex-end;
-}
-
 .filter-control,
 .mobbin-field {
   display: grid;
@@ -395,300 +345,105 @@ function displayStatus(status: string | null | undefined) {
   resize: vertical;
 }
 
-.mobbin-primary-button,
-.mobbin-warning-button,
-.mobbin-danger-button {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-  min-height: 42px;
-  padding: 10px 14px;
-  color: #ffffff;
-  font: inherit;
-  font-weight: 900;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-.mobbin-primary-button {
-  background: linear-gradient(135deg, #4f46e5, #2563eb);
-  box-shadow: 0 14px 26px rgba(79, 70, 229, 0.22);
-}
-
-.mobbin-warning-button {
-  color: #92400e;
-  background: #fef3c7;
-  border-color: #fde68a;
-}
-
-.mobbin-danger-button {
-  color: #991b1b;
-  background: #fee2e2;
-  border-color: #fecaca;
-}
-
-.hero-preview-card {
-  display: grid;
+.item-topline,
+.document-title-row {
+  display: flex;
   gap: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
   min-width: 0;
 }
 
-.hero-preview-card svg {
-  color: #4f46e5;
-}
-
-.hero-preview-card strong,
-.resource-title-row strong,
-.review-focus-grid strong {
+.item-topline strong,
+.review-document h2,
+.technical-grid dd {
   color: #0f172a;
   overflow-wrap: anywhere;
 }
 
-.hero-preview-card p,
-.resource-summary-panel p,
-.review-focus-grid span,
-.section-label,
-.technical-details,
-.review-copy small,
-.review-copy em,
-.mobbin-empty {
+.item-meta,
+.item-summary,
+.document-title-row span,
+.document-reader p,
+.critic-copy,
+.technical-grid dt {
   color: #64748b;
   font-size: 13px;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
-.review-inbox-layout {
-  display: grid;
-  grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.4fr);
-  gap: 16px;
-  align-items: start;
-}
-
-.review-inbox-card {
-  position: sticky;
-  top: 16px;
-}
-
-.review-inbox-list {
-  display: grid;
-  gap: 10px;
-  padding: 0;
-  list-style: none;
-}
-
-.review-inbox-list li {
-  min-width: 0;
-}
-
-.review-inbox-list li.selected .review-inbox-item {
-  background:
-    linear-gradient(#f8fbff, #f8fbff) padding-box,
-    linear-gradient(135deg, #4f46e5, #14b8a6) border-box;
-  border-color: transparent;
-  box-shadow: 0 18px 34px rgba(79, 70, 229, 0.14);
-  transform: translateY(-1px);
-}
-
-.review-inbox-item {
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
-  gap: 10px;
-  align-items: start;
-  width: 100%;
-  min-width: 0;
-  padding: 12px;
-  color: inherit;
-  text-align: left;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 18px;
-  cursor: pointer;
-  transition:
-    transform 160ms ease,
-    box-shadow 160ms ease,
-    border-color 160ms ease;
-}
-
-.review-inbox-item:hover {
-  border-color: #c7d2fe;
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
-  transform: translateY(-1px);
-}
-
-.review-icon {
-  display: grid;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  color: #4f46e5;
-  background: #eef2ff;
-  border-radius: 12px;
-}
-
-.review-copy {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-}
-
-.review-copy strong {
-  color: #0f172a;
-  font-size: 14px;
-  overflow-wrap: anywhere;
-}
-
-.review-copy em {
+.item-summary {
   display: -webkit-box;
   overflow: hidden;
-  font-style: normal;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
-.review-preview-stack,
-.resource-preview {
+.review-document {
   display: grid;
   gap: 14px;
-  min-width: 0;
 }
 
-.resource-title-row {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  justify-content: space-between;
+.review-document h2 {
+  margin: 4px 0 0;
+  font-size: 20px;
+  line-height: 1.25;
+  letter-spacing: 0;
 }
 
-.resource-title-row span {
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.resource-title-row strong {
-  display: block;
-  margin-top: 4px;
-  font-size: 22px;
-  line-height: 1.2;
-}
-
-.resource-summary-panel {
+.document-reader {
   display: grid;
-  gap: 8px;
-  padding: 16px;
-  background: #f8fafc;
+  gap: 12px;
+  min-height: 220px;
+  padding: 18px;
+  background: #fbfdff;
   border: 1px solid #e2e8f0;
   border-radius: 18px;
 }
 
-.section-label {
-  font-size: 12px;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.review-focus-grid {
+.evidence-checklist,
+.status-stack,
+.technical-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
-}
-
-.review-focus-grid article {
-  display: grid;
-  gap: 5px;
-  min-width: 0;
-  padding: 12px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-}
-
-.review-focus-grid strong {
-  font-size: 14px;
-}
-
-.technical-details {
-  padding: 12px 14px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-}
-
-.technical-details summary {
-  color: #475569;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.technical-details dl {
-  display: grid;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.technical-details div {
-  display: grid;
-  grid-template-columns: 140px minmax(0, 1fr);
-  gap: 8px;
-}
-
-.technical-details dt {
-  color: #94a3b8;
-  font-weight: 900;
-}
-
-.technical-details dd {
-  margin: 0;
-  color: #0f172a;
-  overflow-wrap: anywhere;
-}
-
-.evidence-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.evidence-checklist {
-  display: grid;
-  gap: 9px;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 
 .evidence-checklist li {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 9px;
+  gap: 8px;
   align-items: center;
   min-width: 0;
-  padding: 10px;
   color: #475569;
   font-size: 13px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
+  line-height: 1.4;
 }
 
 .evidence-checklist svg {
   color: #4f46e5;
 }
 
-.mobbin-error,
-.mobbin-empty {
-  padding: 13px;
+.technical-grid div {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 10px;
+  padding: 10px 12px;
   background: #f8fafc;
-  border: 1px dashed #cbd5e1;
-  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
 }
 
-.mobbin-error {
-  color: #b91c1c;
-  background: #fef2f2;
-  border-color: #fecaca;
+.technical-grid dt {
+  font-weight: 900;
+}
+
+.technical-grid dd {
+  margin: 0;
+  font-size: 13px;
 }
 
 .visually-hidden {
@@ -703,30 +458,13 @@ function displayStatus(status: string | null | undefined) {
   border: 0;
 }
 
-@media (max-width: 1180px) {
-  .review-inbox-layout,
-  .evidence-grid,
-  .review-focus-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .review-inbox-card {
-    position: static;
-  }
-}
-
 @media (max-width: 680px) {
-  .review-inbox-item,
-  .technical-details div {
+  .filter-control,
+  .item-topline,
+  .document-title-row,
+  .technical-grid div {
+    display: grid;
     grid-template-columns: 1fr;
-  }
-
-  .teacher-hero-actions,
-  .mobbin-primary-button,
-  .mobbin-warning-button,
-  .mobbin-danger-button,
-  .filter-control {
-    width: 100%;
   }
 }
 </style>

@@ -51,8 +51,8 @@ export interface ThoughtPanelData {
 export function createDefaultThoughtPanelData(): ThoughtPanelData {
   return {
     currentTask: {
-      title: 'No active task',
-      taskType: 'Idle',
+      title: '暂无活动任务',
+      taskType: '空闲',
       model: '',
       traceId: '',
       startedAt: '',

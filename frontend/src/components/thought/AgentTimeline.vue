@@ -13,6 +13,17 @@ function statusIcon(status: ThoughtStatus) {
   if (status === 'failed') return XCircle
   return Clock3
 }
+
+function formatThoughtStatus(status: ThoughtStatus) {
+  const labels: Record<ThoughtStatus, string> = {
+    waiting: '等待中',
+    running: '执行中',
+    done: '已完成',
+    warning: '需关注',
+    failed: '失败',
+  }
+  return labels[status]
+}
 </script>
 
 <template>
@@ -20,7 +31,7 @@ function statusIcon(status: ThoughtStatus) {
     <div class="thought-card-heading">
       <div>
         <span class="thought-eyebrow">Agent 执行流程</span>
-        <h3>Agent timeline</h3>
+        <h3>Agent 执行流程</h3>
       </div>
       <span class="step-count">{{ steps.length }}</span>
     </div>
@@ -33,7 +44,7 @@ function statusIcon(status: ThoughtStatus) {
         <div class="timeline-content">
           <div class="timeline-title-row">
             <strong>{{ step.name }}</strong>
-            <em :class="['timeline-status', step.status]">{{ step.status }}</em>
+            <em :class="['timeline-status', step.status]">{{ formatThoughtStatus(step.status) }}</em>
           </div>
           <p>{{ step.summary }}</p>
           <span class="duration">{{ step.duration }}</span>

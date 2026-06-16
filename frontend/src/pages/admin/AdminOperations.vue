@@ -3,7 +3,6 @@ import { computed, onMounted, ref } from 'vue'
 import {
   Activity,
   AlertTriangle,
-  BarChart3,
   Clock3,
   Database,
   GitBranch,
@@ -14,13 +13,12 @@ import {
 import { acknowledgeOpsAlert, fetchAnalyticsOverview, fetchPersistedOpsAlerts } from '../../api/analytics'
 import { fetchHealth } from '../../api/health'
 import MobbinGlassCard from '../../components/mobbin/MobbinGlassCard.vue'
-import MobbinHero from '../../components/mobbin/MobbinHero.vue'
 import MobbinMetricStrip, { type MobbinMetricItem } from '../../components/mobbin/MobbinMetricStrip.vue'
 import MobbinPageShell from '../../components/mobbin/MobbinPageShell.vue'
-import MobbinPreviewFrame from '../../components/mobbin/MobbinPreviewFrame.vue'
 import MobbinStatusPill from '../../components/mobbin/MobbinStatusPill.vue'
 import MobbinTimeline, { type MobbinTimelineItem } from '../../components/mobbin/MobbinTimeline.vue'
 import type { AnalyticsOverview, ComponentHealthResponse, HealthResponse, OpsAlertRecord } from '../../types/api'
+import '../../components/mobbin/console-layout.css'
 
 const health = ref<HealthResponse | null>(null)
 const analytics = ref<AnalyticsOverview | null>(null)
@@ -195,314 +193,235 @@ async function acknowledgeAlert(alert: OpsAlertRecord) {
 
 <template>
   <MobbinPageShell aria-label="AI 运行控制中心">
-    <MobbinHero
-      eyebrow="AI Runtime Command Center"
-      title="AI 运行控制中心"
-      description="集中查看应用健康、Token 预算、模型调用、Fallback 信号、持久化告警和 Trace 上下文，让运维页面更像实时控制台。"
-    >
-      <template #actions>
-        <button class="mobbin-primary-button" type="button" :disabled="isLoading" @click="loadOperations">
-          <RefreshCw :size="18" aria-hidden="true" />
-          {{ isLoading ? '正在刷新数据' : '刷新数据' }}
-        </button>
-      </template>
-      <template #preview>
-        <MobbinPreviewFrame label="Runtime Snapshot">
+    <section class="console-page">
+      <header class="console-header">
+        <div class="console-heading">
+          <span class="console-eyebrow">Operations Console</span>
+          <h1>AI 运行控制中心</h1>
+          <p>集中查看运行健康、依赖状态、告警确认、Agent 活动、模型调用和 API 来源。</p>
+        </div>
+        <div class="console-actions">
+          <button class="console-button" type="button" :disabled="isLoading" @click="loadOperations">
+            <RefreshCw :size="18" aria-hidden="true" />
+            {{ isLoading ? '正在刷新数据' : '刷新数据' }}
+          </button>
+        </div>
+      </header>
+
+      <MobbinMetricStrip :items="runtimeStats" data-test="admin-triage" />
+
+      <p v-if="errorMessage" class="console-error" role="status">{{ errorMessage }}</p>
+      <p class="visually-hidden" data-test="status-showcase-admin">管理员运维 Runtime 健康 依赖健康</p>
+
+      <section class="console-grid">
+        <MobbinGlassCard eyebrow="Runtime" title="Runtime 快照" elevated class="console-span-4">
+          <template #icon>
+            <span class="console-card-icon"><Activity :size="18" aria-hidden="true" /></span>
+          </template>
           <div class="runtime-snapshot">
-            <Activity :size="24" aria-hidden="true" />
             <strong>{{ health?.application?.status ?? 'UNKNOWN' }}</strong>
-            <p>{{ health?.application?.detail ?? '等待健康检查结果' }}</p>
-            <div>
+            <p>{{ health?.application?.detail ?? '等待健康检查结果。' }}</p>
+            <div class="pill-row">
               <MobbinStatusPill :status="health?.model?.status ?? 'UNKNOWN'">Model {{ health?.model?.status ?? 'UNKNOWN' }}</MobbinStatusPill>
               <MobbinStatusPill :status="alerts.length ? 'WATCH' : 'READY'">{{ alerts.length }} Alerts</MobbinStatusPill>
             </div>
           </div>
-        </MobbinPreviewFrame>
-      </template>
-    </MobbinHero>
+        </MobbinGlassCard>
 
-    <MobbinMetricStrip :items="runtimeStats" data-test="admin-triage" />
+        <MobbinGlassCard eyebrow="Dependencies" title="依赖健康" elevated class="console-span-8" data-test="admin-dependency-matrix">
+          <template #icon>
+            <span class="console-card-icon"><ServerCog :size="18" aria-hidden="true" /></span>
+          </template>
+          <ul v-if="healthItems.length" class="console-list dependency-board">
+            <li v-for="item in healthItems" :key="item.name" class="console-list-item dependency-item">
+              <component :is="item.icon" :size="16" aria-hidden="true" />
+              <div>
+                <strong>{{ item.name }}</strong>
+                <p>{{ item.note }}</p>
+                <span>{{ item.component.detail }} / {{ metadataSummary(item.component) }}</span>
+              </div>
+              <MobbinStatusPill :status="item.component.status">{{ item.component.status }}</MobbinStatusPill>
+            </li>
+          </ul>
+          <p v-else class="console-empty">正在从 /api/health 加载 Runtime 依赖健康信号。</p>
+        </MobbinGlassCard>
 
-    <p v-if="errorMessage" class="mobbin-error" role="status">{{ errorMessage }}</p>
-    <p class="visually-hidden" data-test="status-showcase-admin">管理员运维 Runtime 健康 依赖健康</p>
+        <MobbinGlassCard eyebrow="Alerts" title="告警中心" class="console-span-5" data-test="admin-alert-table">
+          <template #icon>
+            <span class="console-card-icon"><AlertTriangle :size="18" aria-hidden="true" /></span>
+          </template>
+          <template v-if="alerts.length">
+            <MobbinTimeline :items="alertTimeline" />
+            <ul class="console-list alert-list">
+              <li v-for="alert in alerts" :key="alert.alertId" class="console-list-item alert-item">
+                <div>
+                  <strong>{{ alert.alertType }}</strong>
+                  <p>{{ alert.summary }}</p>
+                  <span>{{ alert.updatedAt }}</span>
+                </div>
+                <MobbinStatusPill :status="alert.severity">{{ alert.status }}</MobbinStatusPill>
+                <button
+                  class="console-button secondary compact-button"
+                  type="button"
+                  :disabled="alert.status === 'ACKNOWLEDGED' || acknowledgingAlertId === alert.alertId"
+                  @click="acknowledgeAlert(alert)"
+                >
+                  {{ alert.status === 'ACKNOWLEDGED' ? '已确认' : '确认告警' }}
+                </button>
+              </li>
+            </ul>
+          </template>
+          <p v-else class="console-empty">暂无持久化告警。</p>
+        </MobbinGlassCard>
 
-    <section class="ops-command-grid">
-      <MobbinGlassCard eyebrow="Server Status Board" title="依赖健康矩阵" elevated data-test="admin-dependency-matrix">
-        <template #icon>
-          <ServerCog :size="20" aria-hidden="true" />
-        </template>
+        <MobbinGlassCard eyebrow="Agents" title="Agent 活动" class="console-span-7">
+          <template #icon>
+            <span class="console-card-icon"><Clock3 :size="18" aria-hidden="true" /></span>
+          </template>
+          <ul class="console-list">
+            <li v-for="task in recentTasks" :key="task.name" class="console-list-item signal-item">
+              <div>
+                <strong>{{ task.name }}</strong>
+                <span>{{ task.detail }}</span>
+              </div>
+              <MobbinStatusPill :status="task.status">{{ task.status }}</MobbinStatusPill>
+            </li>
+          </ul>
+        </MobbinGlassCard>
 
-        <ul v-if="healthItems.length" class="status-board-list">
-          <li v-for="item in healthItems" :key="item.name">
-            <component :is="item.icon" :size="17" aria-hidden="true" />
-            <span :class="['status-dot', item.component.status.toLowerCase()]" />
-            <div>
-              <strong>{{ item.name }}</strong>
-              <p>{{ item.note }}</p>
-              <small>{{ item.component.detail }} / {{ metadataSummary(item.component) }}</small>
-            </div>
-            <MobbinStatusPill :status="item.component.status">{{ item.component.status }}</MobbinStatusPill>
-          </li>
-        </ul>
-        <p v-else class="mobbin-empty">正在从 /api/health 加载 Runtime 依赖健康信号。</p>
-      </MobbinGlassCard>
+        <MobbinGlassCard eyebrow="Models" title="模型调用" class="console-span-6">
+          <template #icon>
+            <span class="console-card-icon"><WalletCards :size="18" aria-hidden="true" /></span>
+          </template>
+          <ul v-if="analytics" class="console-list">
+            <li v-for="call in modelCalls" :key="call.name + call.status" class="console-list-item signal-item">
+              <div>
+                <strong>{{ call.name }}</strong>
+                <span>{{ call.detail }}</span>
+              </div>
+              <MobbinStatusPill :status="call.status">{{ call.status }}</MobbinStatusPill>
+            </li>
+          </ul>
+          <p v-else class="console-empty">正在从 /api/analytics/overview 加载分析概览。</p>
+        </MobbinGlassCard>
 
-      <MobbinGlassCard eyebrow="Live Alert Timeline" title="告警时间线" elevated data-test="admin-alert-table">
-        <template #icon>
-          <AlertTriangle :size="20" aria-hidden="true" />
-        </template>
-
-        <div v-if="alerts.length" class="alert-timeline-wrap">
-          <MobbinTimeline :items="alertTimeline" />
-          <div class="alert-actions">
-            <button
-              v-for="alert in alerts"
-              :key="alert.alertId"
-              type="button"
-              :disabled="alert.status === 'ACKNOWLEDGED' || acknowledgingAlertId === alert.alertId"
-              @click="acknowledgeAlert(alert)"
-            >
-              {{ alert.status === 'ACKNOWLEDGED' ? `${alert.alertType} 已确认` : `确认 ${alert.alertType}` }}
-            </button>
-          </div>
-        </div>
-        <p v-else class="mobbin-empty">暂无持久化告警。新的告警会从 /api/analytics/ops/alerts/persisted 加载。</p>
-      </MobbinGlassCard>
-
-      <MobbinGlassCard eyebrow="Learning Runtime" title="Agent 与学习活动">
-        <template #icon>
-          <Clock3 :size="20" aria-hidden="true" />
-        </template>
-        <ul class="signal-list">
-          <li v-for="task in recentTasks" :key="task.name">
-            <Activity :size="16" aria-hidden="true" />
-            <div>
-              <strong>{{ task.name }}</strong>
-              <span>{{ task.detail }}</span>
-            </div>
-            <MobbinStatusPill :status="task.status">{{ task.status }}</MobbinStatusPill>
-          </li>
-        </ul>
-      </MobbinGlassCard>
-
-      <MobbinGlassCard eyebrow="Model Calls" title="Provider 与审核信号">
-        <template #icon>
-          <WalletCards :size="20" aria-hidden="true" />
-        </template>
-        <p v-if="!analytics" class="mobbin-empty">正在从 /api/analytics/overview 加载分析概览。</p>
-        <ul v-else class="signal-list">
-          <li v-for="call in modelCalls" :key="`${call.name}-${call.status}`">
-            <BarChart3 :size="16" aria-hidden="true" />
-            <div>
-              <strong>{{ call.name }}</strong>
-              <span>{{ call.detail }}</span>
-            </div>
-            <MobbinStatusPill :status="call.status">{{ call.status }}</MobbinStatusPill>
-          </li>
-        </ul>
-      </MobbinGlassCard>
-
-      <MobbinGlassCard eyebrow="Trace Context" title="最近 Runtime 上下文">
-        <template #icon>
-          <GitBranch :size="20" aria-hidden="true" />
-        </template>
-        <ul class="trace-signal-list">
-          <li v-for="item in traceLogItems" :key="item.label">
-            <div>
-              <strong>{{ item.label }}</strong>
+        <MobbinGlassCard eyebrow="Signals" title="审核与 Provider 信号" class="console-span-6">
+          <template #icon>
+            <span class="console-card-icon"><GitBranch :size="18" aria-hidden="true" /></span>
+          </template>
+          <ul class="console-list">
+            <li class="console-list-item signal-item">
+              <div>
+                <strong>Provider</strong>
+                <span>{{ metadataSummary(health?.model) }}</span>
+              </div>
+              <MobbinStatusPill :status="health?.model?.status ?? 'UNKNOWN'">{{ health?.model?.status ?? 'UNKNOWN' }}</MobbinStatusPill>
+            </li>
+            <li v-for="item in traceLogItems" :key="item.label" class="console-list-item signal-item">
+              <div>
+                <strong>{{ item.label }}</strong>
+                <span>{{ item.value }}</span>
+              </div>
               <MobbinStatusPill :status="item.status">{{ item.status }}</MobbinStatusPill>
-            </div>
-            <p>{{ item.value }}</p>
-          </li>
-        </ul>
-      </MobbinGlassCard>
+            </li>
+          </ul>
+        </MobbinGlassCard>
 
-      <MobbinGlassCard eyebrow="Developer Contract" title="API 来源" class="api-source-card" data-test="admin-api-sources">
-        <template #icon>
-          <Database :size="20" aria-hidden="true" />
-        </template>
-        <ul class="api-source-list">
-          <li>GET /api/health</li>
-          <li>GET /api/analytics/overview</li>
-          <li>GET /api/analytics/ops/alerts/persisted</li>
-          <li>POST /api/analytics/ops/alerts/{alertId}/acknowledge</li>
-          <li>GET /api/admin/model-providers</li>
-          <li>GET /api/agent/tasks/{taskId}/trace</li>
-          <li>GET /api/reviews/resources</li>
-        </ul>
-      </MobbinGlassCard>
+        <MobbinGlassCard eyebrow="API Contract" title="API 来源" class="console-span-12" data-test="admin-api-sources">
+          <template #icon>
+            <span class="console-card-icon"><Database :size="18" aria-hidden="true" /></span>
+          </template>
+          <ul class="api-source-list">
+            <li>GET /api/health</li>
+            <li>GET /api/analytics/overview</li>
+            <li>GET /api/analytics/ops/alerts/persisted</li>
+            <li>POST /api/analytics/ops/alerts/{alertId}/acknowledge</li>
+            <li>GET /api/admin/model-providers</li>
+            <li>GET /api/agent/tasks/{taskId}/trace</li>
+            <li>GET /api/reviews/resources</li>
+          </ul>
+        </MobbinGlassCard>
+      </section>
     </section>
   </MobbinPageShell>
 </template>
 
 <style scoped>
-.mobbin-primary-button {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-  min-height: 42px;
-  padding: 10px 14px;
-  color: #ffffff;
-  font: inherit;
-  font-weight: 900;
-  background: linear-gradient(135deg, #4f46e5, #2563eb);
-  border: 1px solid transparent;
-  border-radius: 12px;
-  box-shadow: 0 14px 26px rgba(79, 70, 229, 0.22);
-  cursor: pointer;
-}
-
 .runtime-snapshot {
   display: grid;
-  gap: 10px;
-}
-
-.runtime-snapshot svg {
-  color: #4f46e5;
+  gap: 12px;
 }
 
 .runtime-snapshot strong {
   color: #0f172a;
-  font-size: 26px;
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: 0;
 }
 
 .runtime-snapshot p,
-.signal-list span,
-.trace-signal-list p,
-.status-board-list p,
-.status-board-list small,
-.mobbin-empty {
+.dependency-item p,
+.dependency-item span,
+.alert-item p,
+.alert-item span,
+.signal-item span {
   color: #64748b;
   font-size: 13px;
   line-height: 1.45;
   overflow-wrap: anywhere;
 }
 
-.runtime-snapshot div {
+.pill-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.ops-command-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 16px;
+.dependency-board {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.ops-command-grid > :deep(.mobbin-glass-card) {
-  grid-column: span 6;
-}
-
-.api-source-card {
-  grid-column: span 12 !important;
-}
-
-.status-board-list,
-.signal-list,
-.trace-signal-list,
-.api-source-list {
-  display: grid;
-  gap: 10px;
-  padding: 0;
-  list-style: none;
-}
-
-.status-board-list li,
-.signal-list li {
-  display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr) auto;
-  gap: 10px;
+.dependency-item,
+.signal-item {
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  min-width: 0;
-  padding: 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
 }
 
-.status-board-list svg,
-.signal-list svg {
+.dependency-item svg {
   color: #4f46e5;
 }
 
-.status-dot {
-  width: 10px;
-  height: 10px;
-  background: #94a3b8;
-  border-radius: 999px;
-  box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.12);
-}
-
-.status-dot.ok,
-.status-dot.ready,
-.status-dot.active,
-.status-dot.up,
-.status-dot.healthy {
-  background: #10b981;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.14);
-}
-
-.status-dot.failed,
-.status-dot.error,
-.status-dot.down,
-.status-dot.critical {
-  background: #ef4444;
-  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.14);
-}
-
-.status-board-list strong,
-.signal-list strong,
-.trace-signal-list strong {
-  display: block;
+.dependency-item strong,
+.alert-item strong,
+.signal-item strong {
   color: #0f172a;
   font-size: 14px;
+  overflow-wrap: anywhere;
 }
 
-.alert-timeline-wrap {
-  display: grid;
-  gap: 12px;
+.alert-list {
+  margin-top: 4px;
 }
 
-.alert-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.alert-item {
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 
-.alert-actions button {
+.compact-button {
+  grid-column: 1 / -1;
+  justify-self: start;
   min-height: 34px;
-  padding: 7px 10px;
-  color: #4f46e5;
-  font: inherit;
+  padding: 7px 11px;
   font-size: 12px;
-  font-weight: 900;
-  background: #eef2ff;
-  border: 1px solid #c7d2fe;
-  border-radius: 999px;
-  cursor: pointer;
-}
-
-.trace-signal-list li {
-  display: grid;
-  gap: 7px;
-  min-width: 0;
-  padding: 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-}
-
-.trace-signal-list li > div {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .api-source-list {
+  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 .api-source-list li {
@@ -514,20 +433,6 @@ async function acknowledgeAlert(alert: OpsAlertRecord) {
   border: 1px solid #e2e8f0;
   border-radius: 14px;
   overflow-wrap: anywhere;
-}
-
-.mobbin-empty,
-.mobbin-error {
-  padding: 13px;
-  background: #f8fafc;
-  border: 1px dashed #cbd5e1;
-  border-radius: 16px;
-}
-
-.mobbin-error {
-  color: #b91c1c;
-  background: #fef2f2;
-  border-color: #fecaca;
 }
 
 .visually-hidden {
@@ -542,21 +447,17 @@ async function acknowledgeAlert(alert: OpsAlertRecord) {
   border: 0;
 }
 
-@media (max-width: 1180px) {
-  .ops-command-grid > :deep(.mobbin-glass-card),
-  .api-source-card {
-    grid-column: span 12 !important;
+@media (max-width: 900px) {
+  .dependency-board {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 680px) {
-  .status-board-list li,
-  .signal-list li {
+  .dependency-item,
+  .signal-item,
+  .alert-item {
     grid-template-columns: 1fr;
-  }
-
-  .mobbin-primary-button {
-    width: 100%;
   }
 }
 </style>
